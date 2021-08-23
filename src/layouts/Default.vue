@@ -7,7 +7,11 @@
       <v-container>
         <v-row>
           <v-app-bar-nav-icon />
-          <v-toolbar-title class="mr-1 mt-2 text-h5">
+          <v-toolbar-title
+            class="mr-1 mt-2 text-h5"
+            style="cursor:pointer"
+            @click="$router.push('/')"
+          >
             쿡북
           </v-toolbar-title>
           <v-combobox
@@ -15,6 +19,7 @@
             :loading="loading"
             :items="items"
             :search-input.sync="autocomplete"
+            cache-items
             class="mx-4 mt-1 fixed-tabs-bar"
             flat
             dense
@@ -23,9 +28,7 @@
             label="검색어를 입력하세요."
             solo-inverted
             @change="search"
-          >
-            {{ select }}
-          </v-combobox>
+          />
           <v-btn
             icon
             @click="search"
@@ -89,6 +92,8 @@
   </v-app>
 </template>
 <script>
+import axios from "axios"
+
 export default {
   name: 'DefaultLayout',
   data() {
@@ -96,8 +101,14 @@ export default {
       select: this.$route.query.s,
       items: [],
       loading: false,
-      dialog: false
+      dialog: false,
+      autocomplete: null
     };
+  },
+  watch: {
+    autocomplete (val) {
+      val && this.querySelections(val)
+    },
   },
   methods: {
     search() {
@@ -108,6 +119,20 @@ export default {
           query: { s: s }
         }
       )
+    },
+    querySelections(val) {
+      this.loading = true;
+      this.items = [];
+      const BASE_URL = "http://172.21.22.195:8080/cookbookapi/v1/";
+      const URL = [BASE_URL, "autocomplete_keywords", "/search?s=", val, "&wildcard=true"].join("")
+      setTimeout(()=>{
+        axios.get(`${URL}`).then((res) => {
+          res.data.hits.forEach(item => {
+            this.items.push(item._source.keyword)
+          });
+        })
+        this.loading = false;
+      }, 500);
     },
   }
 }
