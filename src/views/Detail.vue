@@ -23,84 +23,28 @@
                     <v-icon
                       size="45"
                     >
-                      mdi-arrow-left-thick
-                    </v-icon>
-                  </v-btn>
-                  <v-dialog
-                    v-model="dialog"
-                    width="900"
-                  >
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-btn
-                        icon
-                        v-bind="attrs"
-                        class="ma-1"
-                        v-on="on"
-                      >
-                        <v-icon size="45">
-                          mdi-table-search
-                        </v-icon>
-                      </v-btn>
-                    </template>
-
-                    <v-card>
-                      <v-card-title class="text-h5 grey lighten-2">
-                        데이터 미리보기
-                      </v-card-title>
-
-                      <v-card-text>
-                        <v-simple-table>
-                          <template v-slot:default>
-                            <thead>
-                              <tr>
-                                <th class="text-left">
-                                  base_dt
-                                </th>
-                                <th class="text-left">
-                                  user_mgmt_no
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr> <td>-</td> <td>-</td></tr>
-                              <tr> <td>-</td> <td>-</td></tr>
-                            </tbody>
-                          </template>
-                        </v-simple-table>
-                      </v-card-text>
-
-                      <v-divider />
-
-                      <v-card-actions>
-                        <v-spacer />
-                        <v-btn
-                          color="primary"
-                          text
-                          @click="dialog = false"
-                        >
-                          닫기
-                        </v-btn>
-                      </v-card-actions>
-                    </v-card>
-                  </v-dialog>
-                  <v-btn
-                    icon
-                  >
-                    <v-icon size="45">
-                      mdi-star
+                      mdi-arrow-top-left-thick
                     </v-icon>
                   </v-btn>
                 </div>
               </v-row>
               <v-row>
-                <div class="text-h4 text-left pt-2">
+                <div class="text-h4 text-left">
                   {{ tableInfo.db_name }}.{{ tableInfo.table_name }}
                 </div>
               </v-row>
               <v-row>
                 <div
-                  class="text-h5 text-left editable_div"
+                  class="text-h5 text-left cookbook-editable"
+                  style="display:block"
+                  contenteditable="false"
+                >
+                  <i>{{ tableInfo.entity_name }}</i>
+                </div>
+                <div
+                  class="text-h5 text-left cookbook-editable"
                   contenteditable="true"
+                  style="display:none"
                 >
                   <i>{{ tableInfo.entity_name }}</i>
                 </div>
@@ -108,16 +52,46 @@
             </v-col>
             <v-col
               cols="4"
-              class="d-flex align-end flex-column"
               flat
               height="100%"
+              class="d-flex align-end mt-auto flex-row-reverse"
             >
-              <div
-                class="d-flex align-end flex-column mt-auto"
-                flat
+              <v-btn
+                icon
+                class="cookbook-editable"
+                style="display:block"
+                @click="toggleEditable"
               >
-                편집
-              </div>
+                <v-icon
+                  size="30"
+                >
+                  mdi-pencil
+                </v-icon>
+              </v-btn>
+              <v-btn
+                icon
+                class="cookbook-editable"
+                style="display:none"
+                @click="toggleEditable"
+              >
+                <v-icon
+                  size="30"
+                >
+                  mdi-close
+                </v-icon>
+              </v-btn>
+              <v-btn
+                icon
+                class="cookbook-editable"
+                style="display:none"
+                @click="toggleEditable"
+              >
+                <v-icon
+                  size="30"
+                >
+                  mdi-check
+                </v-icon>
+              </v-btn>
             </v-col>
             <v-col cols="2" />
           </v-row>
@@ -141,6 +115,16 @@
                 disabled
                 :value="tableInfo.description"
                 rows="5"
+                style="display:block"
+                class="cookbook-editable"
+              />
+              <v-textarea
+                outlined
+                label="테이블 설명"
+                :value="tableInfo.description"
+                rows="5"
+                style="display:none"
+                class="cookbook-editable"
               />
             </v-col>
             <v-col
@@ -205,6 +189,16 @@
                 disabled
                 value="-"
                 rows="1"
+                class="cookbook-editable"
+                style="display:block"
+              />
+              <v-textarea
+                outlined
+                label="담당자"
+                value="-"
+                rows="1"
+                class="cookbook-editable"
+                style="display:none"
               />
             </v-col>
             <v-col cols="2" />
@@ -258,6 +252,76 @@
                     :colspan="headers.length"
                     class="elevation-0"
                   >
+                    <v-row class="pt-10">
+                      <v-col
+                        cols="10"
+                      >
+                        <v-row>
+                          <div class="text-h5 text-left">
+                            {{ item.column_name }}
+                          </div>
+                        </v-row>
+                        <v-row>
+                          <div
+                            class="text-h6 text-left cookbook-editable"
+                            style="display:block"
+                            contenteditable="false"
+                          >
+                            <i>{{ item.attribute_name }}</i>
+                          </div>
+                          <div
+                            class="text-h6 text-left cookbook-editable"
+                            contenteditable="true"
+                            style="display:none"
+                          >
+                            <i>{{ item.attribute_name }}</i>
+                          </div>
+                        </v-row>
+                      </v-col>
+                      <v-spacer />
+                      <v-col
+                        cols="2"
+                        flat
+                        class="d-flex align-end mt-auto flex-row-reverse"
+                      >
+                        <v-btn
+                          icon
+                          class="cookbook-editable"
+                          style="display:block"
+                          @click="toggleEditable"
+                        >
+                          <v-icon
+                            size="30"
+                          >
+                            mdi-pencil
+                          </v-icon>
+                        </v-btn>
+                        <v-btn
+                          icon
+                          class="cookbook-editable"
+                          style="display:none"
+                          @click="toggleEditable"
+                        >
+                          <v-icon
+                            size="30"
+                          >
+                            mdi-close
+                          </v-icon>
+                        </v-btn>
+                        <v-btn
+                          icon
+                          class="cookbook-editable"
+                          style="display:none"
+                          @click="toggleEditable"
+                        >
+                          <v-icon
+                            size="30"
+                          >
+                            mdi-check
+                          </v-icon>
+                        </v-btn>
+                      </v-col>
+                    </v-row>
                     <v-row class="mt-10">
                       <v-textarea
                         outlined
@@ -265,6 +329,16 @@
                         disabled
                         :value="item.description"
                         rows="5"
+                        class="cookbook-editable"
+                        style="display:block"
+                      />
+                      <v-textarea
+                        outlined
+                        label="컬럼 설명"
+                        :value="item.description"
+                        rows="5"
+                        class="cookbook-editable"
+                        style="display:none"
                       />
                     </v-row>
                     <v-row>
@@ -337,6 +411,17 @@
                                 <td>{{ code.description }}</td>
                                 <td />
                               </tr>
+                              <tr>
+                                <td><v-text-field /></td>
+                                <td><v-text-field /></td>
+                                <td>
+                                  <v-btn icon>
+                                    <v-icon>
+                                      mdi-plus
+                                    </v-icon>
+                                  </v-btn>
+                                </td>
+                              </tr>
                             </tbody>
                           </template>
                         </v-simple-table>
@@ -382,11 +467,14 @@
                     disabled
                     :value="item.comment"
                   >
-                    <v-icon
+                    <v-btn
                       slot="append"
+                      icon
                     >
-                      mdi-minus
-                    </v-icon>
+                      <v-icon>
+                        mdi-minus
+                      </v-icon>
+                    </v-btn>
                   </v-text-field>
                 </v-col>
                 <v-col cols="1" />
@@ -407,11 +495,14 @@
                 </v-col>
                 <v-col cols="9">
                   <v-text-field>
-                    <v-icon
+                    <v-btn
                       slot="append"
+                      icon
                     >
-                      mdi-plus
-                    </v-icon>
+                      <v-icon>
+                        mdi-plus
+                      </v-icon>
+                    </v-btn>
                   </v-text-field>
                 </v-col>
                 <v-col cols="1" />
@@ -468,7 +559,7 @@ export default {
   },
   methods: {
     fetchCodeInfo(columnName){
-      let BASE_URL = "http://172.21.22.195:8080/cookbookapi/v1/codes/search?s";
+      let BASE_URL = "http://172.21.22.195:9090/cookbookapi/v1/codes/search?s";
       console.log([[BASE_URL, columnName].join("="),"by-column-name=true"].join("&"));
       axios.get([[BASE_URL, columnName].join("="),"by-column-name=true"].join("&")).then((res) => {
         const codes = [];
@@ -481,14 +572,14 @@ export default {
 
     },
     fetchTableInfo() {
-      let BASE_URL = "http://172.21.22.195:8080/cookbookapi/v1/tables";
+      let BASE_URL = "http://172.21.22.195:9090/cookbookapi/v1/tables";
       let URL = [BASE_URL, this.$route.params.id].join("/");
 
       axios.get(`${URL}`).then((res) => {
         this.tableInfo = res.data;
       });
 
-      BASE_URL = "http://172.21.22.195:8080/cookbookapi/v1/columns/search?s";
+      BASE_URL = "http://172.21.22.195:9090/cookbookapi/v1/columns/search?s";
       axios.get([[BASE_URL, this.$route.params.id].join("="),"by-parent-id=true"].join("&")).then((res) => {
         this.columnInfo = [];
         console.log(res.data.hits);
@@ -499,13 +590,24 @@ export default {
         });
       });
 
-      BASE_URL = "http://172.21.22.195:8080/cookbookapi/v1/comments/search?s";
+      BASE_URL = "http://172.21.22.195:9090/cookbookapi/v1/comments/search?s";
       axios.get([[BASE_URL, this.$route.params.id].join("="),"by-parent-id=true"].join("&")).then((res) => {
         this.commentsInfo = [];
         res.data.hits.forEach(item => {
           this.commentsInfo.push(item._source)
         });
       });
+    },
+    toggleEditable(){
+      const l = document.getElementsByClassName("cookbook-editable");
+      l.forEach(item => {
+        if(item.style.display === 'none'){
+          item.style.display = 'block'
+        } else {
+          item.style.display = 'none'
+        }
+      });
+      console.log(l);
     },
   }
 }
@@ -515,7 +617,14 @@ export default {
   box-shadow: none !important;
 }
 
-div[contenteditable] {
+div[contenteditable="false"] {
   border: 1px;
+  border-radius: 3px;
+  padding: 1px;
+}
+
+div[contenteditable="true"] {
+  border: solid 1px;
+  border-radius: 3px;
 }
 </style>

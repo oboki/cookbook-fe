@@ -6,7 +6,7 @@
     >
       <v-container>
         <v-row>
-          <v-app-bar-nav-icon />
+          <v-app-bar-nav-icon @click="drawer = true" />
           <v-toolbar-title
             class="mr-1 mt-2 text-h5"
             style="cursor:pointer"
@@ -86,13 +86,34 @@
         </v-row>
       </v-container>
     </v-app-bar>
+    <v-navigation-drawer
+      v-model="drawer"
+      absolute
+      temporary
+    >
+      <v-list
+        nav
+        dense
+      >
+        <v-list-item-group
+          v-model="group"
+        >
+          <v-list-item>
+            <v-list-item-icon>
+              <v-icon>mdi-airplane</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Airflow</v-list-item-title>
+          </v-list-item>
+        </v-list-item-group>
+      </v-list>
+    </v-navigation-drawer>
     <v-main>
       <router-view :key="$route.path" />
     </v-main>
   </v-app>
 </template>
 <script>
-import axios from "axios"
+import * as searchApi from '@/api/search';
 
 export default {
   name: 'DefaultLayout',
@@ -102,7 +123,8 @@ export default {
       items: [],
       loading: false,
       dialog: false,
-      autocomplete: null
+      autocomplete: null,
+      drawer: false,
     };
   },
   watch: {
@@ -123,10 +145,10 @@ export default {
     querySelections(val) {
       this.loading = true;
       this.items = [];
-      const BASE_URL = "http://172.21.22.195:8080/cookbookapi/v1/";
-      const URL = [BASE_URL, "autocomplete_keywords", "/search?s=", val, "&wildcard=true"].join("")
       setTimeout(()=>{
-        axios.get(`${URL}`).then((res) => {
+        searchApi.search(
+          'autocomplete_keywords', val, ["wildcard"]
+        ).then((res) => {
           res.data.hits.forEach(item => {
             this.items.push(item._source.keyword)
           });

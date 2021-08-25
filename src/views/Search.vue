@@ -56,6 +56,7 @@
                 <router-link
                   :to="{path: /detail/+item._id}"
                   tag="div"
+                  class="link-detail"
                 >
                   <div
                     class="text-h6 font-weight-bold"
@@ -239,6 +240,7 @@
                 <router-link
                   :to="{path: /detail/+item._source.parent_id}"
                   tag="div"
+                  class="link-detail"
                 >
                   <div
                     class="text-h6 font-weight-bold"
@@ -302,6 +304,7 @@
                 <router-link
                   :to="{path: /detail/+item._source.parent_id}"
                   tag="div"
+                  class="link-detail"
                 >
                   <div
                     class="text-h6 font-weight-bold"
@@ -431,7 +434,7 @@ export default {
   methods: {
     fetchSearchResult() {
       let URL = "";
-      const BASE_URL = "http://172.21.22.195:8080/cookbookapi/v1/";
+      const BASE_URL = "http://172.21.22.195:9090/cookbookapi/v1/";
       if (this.$route.query.more === 'tables'){
         this.tableSearchResult = [];
         URL = [BASE_URL, "tables", "/search?s=", this.$route.query.s, "&size=10", "&page=", this.$route.query.page].join("")
