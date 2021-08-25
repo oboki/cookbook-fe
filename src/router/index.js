@@ -4,6 +4,7 @@ import VueRouter from 'vue-router'
 import DefaultLayout from '@/layouts/Default'
 import SearchView from '@/views/Search'
 import DetailView from '@/views/Detail'
+import TestView from '@/views/Test'
 
 Vue.use(VueRouter)
 
@@ -24,6 +25,11 @@ const routes = [
       },
 
     ]
+  },
+  {
+    path: '/test',
+    name: 'Test',
+    component: TestView
   },
 ]
 

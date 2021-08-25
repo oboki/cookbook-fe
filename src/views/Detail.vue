@@ -30,7 +30,7 @@
               </v-row>
               <v-row>
                 <div class="text-h4 text-left">
-                  {{ tableInfo.db_name }}.{{ tableInfo.table_name }}
+                  {{ detail.table.db_name }}.{{ detail.table.table_name }}
                 </div>
               </v-row>
               <v-row>
@@ -39,14 +39,14 @@
                   style="display:block"
                   contenteditable="false"
                 >
-                  <i>{{ tableInfo.entity_name }}</i>
+                  <i>{{ detail.table.entity_name }}</i>
                 </div>
                 <div
                   class="text-h5 text-left cookbook-editable"
                   contenteditable="true"
                   style="display:none"
                 >
-                  <i>{{ tableInfo.entity_name }}</i>
+                  <i>{{ detail.table.entity_name }}</i>
                 </div>
               </v-row>
             </v-col>
@@ -113,7 +113,7 @@
                 outlined
                 label="테이블 설명"
                 disabled
-                :value="tableInfo.description"
+                :value="detail.table.description"
                 rows="5"
                 style="display:block"
                 class="cookbook-editable"
@@ -121,7 +121,7 @@
               <v-textarea
                 outlined
                 label="테이블 설명"
-                :value="tableInfo.description"
+                :value="detail.table.description"
                 rows="5"
                 style="display:none"
                 class="cookbook-editable"
@@ -153,7 +153,7 @@
                 outlined
                 label="스토리지 타입"
                 disabled
-                :value="tableInfo.storage_type"
+                :value="detail.table.storage_type"
                 rows="1"
               />
             </v-col>
@@ -170,7 +170,7 @@
                 outlined
                 label="파티션"
                 disabled
-                :value="tableInfo.partition_key + ': ' + tableInfo.partition_range_from + ' ~ ' + tableInfo.partition_range_to"
+                :value="detail.table.partition_key + ': ' + detail.table.partition_range_from + ' ~ ' + detail.table.partition_range_to"
                 rows="1"
               />
             </v-col>
@@ -239,7 +239,7 @@
             <v-col cols="8">
               <v-data-table
                 :headers="tableHeaders"
-                :items="columnInfo"
+                :items="detail.columns"
                 :single-expand="singleExpand"
                 :expanded.sync="expanded"
                 item-key="position"
@@ -389,42 +389,10 @@
                         유효값
                       </v-col>
                       <v-col cols="10">
-                        <v-simple-table>
-                          <template v-slot:default>
-                            <thead>
-                              <tr>
-                                <th class="text-left">
-                                  값
-                                </th>
-                                <th class="text-left">
-                                  설명
-                                </th>
-                                <th class="text-left" />
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr
-                                v-for="code in codesInfo[item.column_name]"
-                                :key="code.id"
-                              >
-                                <td>{{ code.code }}</td>
-                                <td>{{ code.description }}</td>
-                                <td />
-                              </tr>
-                              <tr>
-                                <td><v-text-field /></td>
-                                <td><v-text-field /></td>
-                                <td>
-                                  <v-btn icon>
-                                    <v-icon>
-                                      mdi-plus
-                                    </v-icon>
-                                  </v-btn>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </template>
-                        </v-simple-table>
+                        <code-list
+                          :column-name="item.column_name"
+                          :codes="codes[item.column_name]"
+                        />
                       </v-col>
                     </v-row>
                   </td>
@@ -449,7 +417,7 @@
             </v-col>
             <v-col cols="8">
               <v-row
-                v-for="item in commentsInfo"
+                v-for="item in detail.comments"
                 :key="item._id"
                 justify="center"
                 align="center"
@@ -515,14 +483,18 @@
   </v-container>
 </template>
 <script>
-import axios from "axios"
+import * as httpApi from '@/api/httpApi';
+import CodeList from '@/views/CodeList';
+import TestComp from '@/views/TestComp';
 
 export default {
   name: "DetailView",
+  components: {
+    CodeList,
+  },
   data() {
     return {
-      tableInfo : null,
-      expanded: [0],
+      expanded: [],
       dialog: false,
       singleExpand : false,
       tableHeaders: [
@@ -539,9 +511,12 @@ export default {
         { text: "개인정보항목여부", value: "protected" },
         { text: "", value: "data-table-expand" },
       ],
-      columnInfo : [],
-      commentsInfo : [],
-      codesInfo : {},
+      detail: {
+        'table': {},
+        'columns': [],
+        'comments': [],
+      },
+      codes: {},
     };
   },
   watch: {
@@ -558,44 +533,46 @@ export default {
     this.fetchTableInfo();
   },
   methods: {
-    fetchCodeInfo(columnName){
-      let BASE_URL = "http://172.21.22.195:9090/cookbookapi/v1/codes/search?s";
-      console.log([[BASE_URL, columnName].join("="),"by-column-name=true"].join("&"));
-      axios.get([[BASE_URL, columnName].join("="),"by-column-name=true"].join("&")).then((res) => {
-        const codes = [];
+    fetchCodeInfo(val){
+      httpApi.search(
+        'codes', val,
+        1000, 0, ['by-column-name']
+      ).then((res) => {
+        const tmp = [];
         res.data.hits.forEach(item => {
-          codes.push(item._source);
+          tmp.push(item._source);
         });
-        this.codesInfo[columnName] = codes;
-        this.$forceUpdate();
+        this.$set(this.codes, val, tmp)
       });
-
     },
     fetchTableInfo() {
-      let BASE_URL = "http://172.21.22.195:9090/cookbookapi/v1/tables";
-      let URL = [BASE_URL, this.$route.params.id].join("/");
-
-      axios.get(`${URL}`).then((res) => {
-        this.tableInfo = res.data;
+      httpApi.getDocument('tables', this.$route.params.id).then((res) => {
+        this.$set(this.detail, 'table', res.data);
+        console.log(this.detail);
       });
 
-      BASE_URL = "http://172.21.22.195:9090/cookbookapi/v1/columns/search?s";
-      axios.get([[BASE_URL, this.$route.params.id].join("="),"by-parent-id=true"].join("&")).then((res) => {
-        this.columnInfo = [];
-        console.log(res.data.hits);
+      httpApi.search(
+        'columns', this.$route.params.id,
+        1000, 0, ['by-parent-id']
+      ).then((res) => {
+        const tmp = [];
         res.data.hits.forEach(item => {
           item._source['id'] = item._id;
-          this.columnInfo.push(item._source)
-          //this.expanded.push(item._source)
+          tmp.push(item._source); //this.expanded.push(item._source)
         });
+        this.$set(this.detail, 'columns', tmp)
       });
 
-      BASE_URL = "http://172.21.22.195:9090/cookbookapi/v1/comments/search?s";
-      axios.get([[BASE_URL, this.$route.params.id].join("="),"by-parent-id=true"].join("&")).then((res) => {
-        this.commentsInfo = [];
+      httpApi.search(
+        'comments', this.$route.params.id,
+        1000, 0, ['by-parent-id']
+      ).then((res) => {
+        const tmp = [];
         res.data.hits.forEach(item => {
-          this.commentsInfo.push(item._source)
+          item._source['id'] = item._id;
+          tmp.push(item._source);
         });
+        this.$set(this.detail, 'comments', tmp)
       });
     },
     toggleEditable(){

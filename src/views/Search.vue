@@ -1,10 +1,10 @@
 <template>
-  <v-container
-    v-if="$route.query.more==='tables'"
-    style="height: calc(100vh);"
-  >
+  <v-container>
     <v-row>
-      <v-col cols="9">
+      <v-col
+        v-if="$route.query.more==='tables'"
+        cols="9"
+      >
         <v-row
           justify="center"
           align="center"
@@ -25,7 +25,7 @@
           <v-spacer />
         </v-row>
 
-        <v-row v-if="tableSearchResult.length">
+        <v-row v-if="searchResult.tables.length">
           <v-col
             cols="3"
           >
@@ -46,7 +46,7 @@
           </v-col>
           <v-col cols="9">
             <v-row
-              v-for="item in tableSearchResult"
+              v-for="item in searchResult.tables"
               :key="item._id"
             >
               <v-col
@@ -91,32 +91,16 @@
           <v-spacer />
         </v-row>
       </v-col>
-    </v-row>
-  </v-container>
-  <v-container
-    v-else-if="$route.query.more==='columns'"
-    style="height: calc(100vh)"
-  >
-    columns
-  </v-container>
-  <v-container
-    v-else-if="$route.query.more==='codes'"
-    style="height: calc(100vh)"
-  >
-    codes
-  </v-container>
-  <v-container
-    v-else-if="$route.query.more==='comments'"
-    style="height: calc(100vh)"
-  >
-    comments
-  </v-container>
-  <v-container
-    v-else
-    style="height: calc(100vh)"
-  >
-    <v-row>
-      <v-col cols="9">
+      <v-col
+        v-else-if="$route.query.more==='columns'"
+        cols="9"
+      >
+        columns
+      </v-col>
+      <v-col
+        v-else
+        cols="9"
+      >
         <v-row
           justify="center"
           align="center"
@@ -137,7 +121,7 @@
           <v-spacer />
         </v-row>
 
-        <v-row v-if="tableSearchResult.length">
+        <v-row v-if="searchResult.tables.length">
           <v-col
             cols="3"
           >
@@ -166,7 +150,7 @@
           </v-col>
           <v-col cols="9">
             <v-row
-              v-for="item in tableSearchResult"
+              v-for="item in searchResult.tables"
               :key="item._id"
             >
               <v-col
@@ -203,7 +187,7 @@
           <v-spacer />
         </v-row>
 
-        <v-row v-if="columnSearchResult.length">
+        <v-row v-if="searchResult.columns.length">
           <v-col cols="3">
             <div
               class="text-h5 mt-2"
@@ -230,7 +214,7 @@
           </v-col>
           <v-col cols="9">
             <v-row
-              v-for="item in columnSearchResult"
+              v-for="item in searchResult.columns"
               :key="item._id"
             >
               <v-col
@@ -267,7 +251,7 @@
           <v-spacer />
         </v-row>
 
-        <v-row v-if="codeSearchResult.length">
+        <v-row v-if="searchResult.codes.length">
           <v-col cols="3">
             <div
               class="text-h5 mt-2"
@@ -294,7 +278,7 @@
           </v-col>
           <v-col cols="9">
             <v-row
-              v-for="item in codeSearchResult"
+              v-for="item in searchResult.codes"
               :key="item._id"
             >
               <v-col
@@ -328,7 +312,7 @@
           <v-spacer />
         </v-row>
 
-        <v-row v-if="commentSearchResult.length">
+        <v-row v-if="searchResult.comments.length">
           <v-col cols="3">
             <div
               class="text-h5 mt-2"
@@ -355,7 +339,7 @@
           </v-col>
           <v-col cols="9">
             <v-row
-              v-for="item in commentSearchResult"
+              v-for="item in searchResult.comments"
               :key="item._id"
             >
               <v-col
@@ -381,37 +365,34 @@
         </v-row>
       </v-col>
       <v-col cols="3">
-        <v-row>
-          <v-col
-            cols="10"
-            class="text-h6 mt-9 ml-3 text-left"
-          >
-            <div>최근 검색어</div>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col class="ml-3 text-left">
-            <ul>
-              <li>newest</li>
-              <li>oldest</li>
-            </ul>
-          </v-col>
-        </v-row>
+        <sidebar />
       </v-col>
     </v-row>
   </v-container>
 </template>
 <script>
-import axios from "axios"
+import * as httpApi from '@/api/httpApi';
+import Sidebar from '@/views/Sidebar'
 
 export default {
   name: "SearchView",
+  components: {
+    Sidebar
+  },
   data() {
     return {
-      tableSearchResult: null,
-      columnSearchResult: null,
-      codeSearchResult: null,
-      commentSearchResult: null,
+      searchTargets: [
+        'tables',
+        'columns',
+        'codes',
+        'comments'
+      ],
+      searchResult: {
+        'tables': [],
+        'columns': [],
+        'codes': [],
+        'comments': [],
+      },
       total: null,
       more: null,
       currentPage: 1
@@ -433,63 +414,40 @@ export default {
   },
   methods: {
     fetchSearchResult() {
-      let URL = "";
-      const BASE_URL = "http://172.21.22.195:9090/cookbookapi/v1/";
-      if (this.$route.query.more === 'tables'){
-        this.tableSearchResult = [];
-        URL = [BASE_URL, "tables", "/search?s=", this.$route.query.s, "&size=10", "&page=", this.$route.query.page].join("")
-        axios.get(`${URL}`).then((res) => {
-          this.tableSearchResult = res.data.hits;
+      if (this.$route.query.more){
+        httpApi.search(
+          this.$route.query.more,
+          this.$route.query.s, 10,
+          this.$route.query.page,
+        ).then((res) => {
+          this.$set(
+            this.searchResult,
+            this.$route.query.more, []
+          );
+          this.$set(
+            this.searchResult,
+            this.$route.query.more, res.data.hits
+          );
           this.total = res.data.total;
         });
-      } else if (this.$route.query.more === 'columns'){
-        this.columnSearchResult = [];
-        URL = [BASE_URL, "columns", "/search?s=", this.$route.query.s, "&size=10"].join("")
-        axios.get(`${URL}`).then((res) => {
-          this.columnSearchResult = res.data.hits;
-        });
-      } else if (this.$route.query.more === 'codes'){
-        this.codeSearchResult = [];
-        URL = [BASE_URL, "codes", "/search?s=", this.$route.query.s, "&size=10"].join("")
-        axios.get(`${URL}`).then((res) => {
-          this.codeSearchResult = res.data.hits;
-        });
-      } else if (this.$route.query.more === 'comments'){
-        this.commentSearchResult = [];
-        URL = [BASE_URL, "comments", "/search?s=", this.$route.query.s, "&size=10"].join("")
-        axios.get(`${URL}`).then((res) => {
-          this.commentSearchResult = res.data.hits;
-        });
       } else {
-        this.tableSearchResult = [];
-        URL = [BASE_URL, "tables", "/search?s=", this.$route.query.s].join("")
-        axios.get(`${URL}`).then((res) => {
-          this.tableSearchResult = res.data.hits;
-        });
-        this.columnSearchResult = [];
-        URL = [BASE_URL, "columns", "/search?s=", this.$route.query.s].join("")
-        axios.get(`${URL}`).then((res) => {
-          this.columnSearchResult = res.data.hits;
-        });
-        this.codeSearchResult = [];
-        URL = [BASE_URL, "codes", "/search?s=", this.$route.query.s].join("")
-        axios.get(`${URL}`).then((res) => {
-          this.codeSearchResult = res.data.hits;
-        });
-        this.commentSearchResult = [];
-        URL = [BASE_URL, "comments", "/search?s=", this.$route.query.s].join("")
-        axios.get(`${URL}`).then((res) => {
-          this.commentSearchResult = res.data.hits;
-        });
-
+        this.searchTargets.forEach(target => {
+          httpApi.search(target, this.$route.query.s).then((res) => {
+            this.$set(this.searchResult, target, []);
+            this.$set(this.searchResult, target, res.data.hits);
+          });
+        })
       }
     },
     handlePageChange(value) {
       this.currentPage = value;
-      console.log(value);
       this.$router.push(
         {
-          query: { s: this.$route.query.s, more: this.$route.query.more, page: Number(value) -1 }
+          query: {
+            s: this.$route.query.s,
+            more: this.$route.query.more,
+            page: Number(value) -1
+          }
         }
       );
     },

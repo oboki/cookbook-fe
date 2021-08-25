@@ -113,7 +113,7 @@
   </v-app>
 </template>
 <script>
-import * as searchApi from '@/api/search';
+import * as httpApi from '@/api/httpApi';
 
 export default {
   name: 'DefaultLayout',
@@ -146,8 +146,9 @@ export default {
       this.loading = true;
       this.items = [];
       setTimeout(()=>{
-        searchApi.search(
-          'autocomplete_keywords', val, ["wildcard"]
+        httpApi.search(
+          'autocomplete_keywords', val,
+          0, 0, ["wildcard"]
         ).then((res) => {
           res.data.hits.forEach(item => {
             this.items.push(item._source.keyword)
