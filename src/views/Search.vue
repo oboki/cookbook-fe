@@ -222,7 +222,7 @@
                 class="ml-2"
               >
                 <router-link
-                  :to="{path: /detail/+item._source.parent_id}"
+                  :to="{path: /detail/+item._source.parent_id, hash: item._id}"
                   tag="div"
                   class="link-detail"
                 >

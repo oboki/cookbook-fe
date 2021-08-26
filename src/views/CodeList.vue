@@ -23,10 +23,13 @@
             <td />
           </tr>
           <tr>
-            <td><v-text-field /></td>
-            <td><v-text-field /></td>
+            <td><v-text-field v-model="newCode.name" /></td>
+            <td><v-text-field v-model="newCode.description" /></td>
             <td>
-              <v-btn icon>
+              <v-btn
+                icon
+                @click="addCode"
+              >
                 <v-icon>
                   mdi-plus
                 </v-icon>
@@ -39,9 +42,15 @@
   </div>
 </template>
 <script>
+import http from '@/api/http';
+
 export default {
   name: 'CodeList',
   props: {
+    tableId: {
+      type: String,
+      default: null
+    },
     columnName: {
       type: String,
       default: null
@@ -53,6 +62,30 @@ export default {
     codes: {
       type: Array,
       default: null
+    }
+  },
+  data() {
+    return {
+      newCode: {name: null, description: null},
+    }
+  },
+  methods: {
+    addCode(){
+      const newCode = {
+        "parent_id": this.tableId,
+        "column_name": this.columnName,
+        "code": this.newCode.name,
+        "description": this.newCode.description
+      }
+
+      http.post('/codes/add', {
+        data: newCode
+      }).then((res) => {
+        newCode['id'] = res.data.created_doc_id;
+      });
+
+      this.codes.push(newCode);
+      this.newCode = {name: null, description: null};
     }
   }
 }
