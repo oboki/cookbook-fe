@@ -1,9 +1,5 @@
 <template>
   <div>
-    <editable
-      v-model="editableModel.text.a"
-      :editable="true"
-    />
     <h1>
       a
     </h1>
@@ -22,13 +18,9 @@
 </template>
 <script>
 import http from '@/api/http';
-import Editable from '@/components/Editable.vue';
 
 export default {
   name: 'Test',
-  components: {
-    Editable
-  },
   data(){
     return {
       editable: 0,
