@@ -57,26 +57,21 @@
                   :to="{path: /detail/+item._id}"
                   tag="div"
                   class="link-detail"
+                  style="cursor:pointer"
                 >
-                  <div
-                    class="text-h6 font-weight-bold"
-                    style="cursor:pointer"
-                  >
+                  <div class="text-h6">
                     {{ item._source.db_name }}.{{ item._source.table_name }}
                   </div>
-                  <div
-                    class="text-h6 font-weight-bold"
-                    style="cursor:pointer"
-                  >
+                  <div class="text-h6">
                     {{ item._source.entity_name }}
                   </div>
+                  <div class="mt-2">
+                    {{ item._source.description }}
+                  </div>
+                  <div class="">
+                    - 컬럼 | {{ item._source.storage_type }}
+                  </div>
                 </router-link>
-                <div class="mt-2">
-                  {{ item._source.description }}
-                </div>
-                <div class="">
-                  - 컬럼 | {{ item._source.storage_type }}
-                </div>
               </v-col>
             </v-row>
             <div class="text-center pt-16 pb-10">
@@ -161,26 +156,21 @@
                   :to="{path: /detail/+item._id}"
                   tag="div"
                   class="link-detail"
+                  style="cursor:pointer"
                 >
-                  <div
-                    class="text-h6 font-weight-bold"
-                    style="cursor:pointer"
-                  >
+                  <div class="text-h6">
                     {{ item._source.db_name }}.{{ item._source.table_name }}
                   </div>
-                  <div
-                    class="text-h6 font-weight-bold"
-                    style="cursor:pointer"
-                  >
+                  <div class="text-h6">
                     {{ item._source.entity_name }}
                   </div>
+                  <div class="mt-2">
+                    {{ item._source.description }}
+                  </div>
+                  <div class="">
+                    - 컬럼 | {{ item._source.storage_type }}
+                  </div>
                 </router-link>
-                <div class="mt-2">
-                  {{ item._source.description }}
-                </div>
-                <div class="">
-                  - 컬럼 | {{ item._source.storage_type }}
-                </div>
               </v-col>
             </v-row>
           </v-col>
@@ -225,26 +215,21 @@
                   :to="{path: /detail/+item._source.parent_id, hash: item._id}"
                   tag="div"
                   class="link-detail"
+                  style="cursor:pointer"
                 >
-                  <div
-                    class="text-h6 font-weight-bold"
-                    style="cursor:pointer"
-                  >
+                  <div class="text-h6">
                     {{ item._source.column_name }}
                   </div>
-                  <div
-                    class="text-h6 font-weight-bold"
-                    style="cursor:pointer"
-                  >
+                  <div class="text-h6">
                     {{ item._source.attribute_name }}
                   </div>
+                  <div class="">
+                    {{ item._source.db_name }}.{{ item._source.table_name }} | {{ item._source.entity_name }}
+                  </div>
+                  <div class="">
+                    {{ item._source.data_type }} | {{ item._source.data_length }} | 암호화 X | 개인정보항목 X
+                  </div>
                 </router-link>
-                <div class="">
-                  {{ item._source.db_name }}.{{ item._source.table_name }} | {{ item._source.entity_name }}
-                </div>
-                <div class="">
-                  {{ item._source.data_type }} | {{ item._source.data_length }} | 암호화 X | 개인정보항목 X
-                </div>
               </v-col>
             </v-row>
           </v-col>
@@ -286,26 +271,21 @@
                 class="ml-2"
               >
                 <router-link
-                  :to="{path: /detail/+item._source.parent_id}"
+                  :to="{path: /detail/+item._source.parent_id, hash: item._source.column_name}"
                   tag="div"
                   class="link-detail"
+                  style="cursor:pointer;"
                 >
-                  <div
-                    class="text-h6 font-weight-bold"
-                    style="cursor:pointer"
-                  >
+                  <div class="text-h6">
                     {{ item._source.code }}
                   </div>
-                  <div
-                    class="text-h6 font-weight-bold"
-                    style="cursor:pointer"
-                  >
+                  <div class="text-h6">
                     {{ item._source.description }}
                   </div>
+                  <div class="">
+                    {{ item._source.column_name }} {{ item._source.attribute_name }}
+                  </div>
                 </router-link>
-                <div class="">
-                  {{ item._source.column_name }} {{ item._source.attribute_name }}
-                </div>
               </v-col>
             </v-row>
           </v-col>
@@ -346,18 +326,25 @@
                 cols="9"
                 class="ml-2"
               >
-                <div class="text-h6 font-weight-bold">
-                  {{ item._source.db_name }}.{{ item._source.table_name }}
-                </div>
-                <div class="text-h6 font-weight-bold">
-                  {{ item._source.entity_name_name }}
-                </div>
-                <div class="">
-                  {{ item._source.comment }}
-                </div>
-                <div class="">
-                  {{ item._source.author }}
-                </div>
+                <router-link
+                  :to="{path: /detail/+item._source.parent_id, hash: item._id}"
+                  tag="div"
+                  class="link-detail"
+                  style="cursor:pointer;"
+                >
+                  <div class="text-h6">
+                    {{ item._source.db_name }}.{{ item._source.table_name }}
+                  </div>
+                  <div class="text-h6">
+                    {{ item._source.entity_name_name }}
+                  </div>
+                  <div class="">
+                    {{ item._source.comment }}
+                  </div>
+                  <div class="">
+                    {{ item._source.author }}
+                  </div>
+                </router-link>
               </v-col>
             </v-row>
           </v-col>

@@ -11,8 +11,10 @@
     <v-row>
       <v-col class="ml-3 text-left">
         <ul>
-          <li>newest</li>
-          <li>oldest</li>
+          <li>amet,</li>
+          <li>lacinia,</li>
+          <li>massa,</li>
+          <li>Vestibulum</li>
         </ul>
       </v-col>
     </v-row>

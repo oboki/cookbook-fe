@@ -3,6 +3,7 @@
     <v-app-bar
       dark
       app
+      short
     >
       <v-container>
         <v-row>
@@ -80,7 +81,10 @@
             </v-card>
           </v-dialog>
 
-          <v-btn icon>
+          <v-btn
+            icon
+            :to="{path: '/user'}"
+          >
             <v-icon>mdi-account</v-icon>
           </v-btn>
         </v-row>

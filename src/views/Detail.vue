@@ -10,7 +10,7 @@
             <v-col
               cols="2"
             />
-            <v-col cols="4">
+            <v-col cols="7">
               <v-row
                 :id="this.$route.params.is"
                 class="ml-n4"
@@ -43,11 +43,20 @@
               </v-row>
             </v-col>
             <v-col
-              cols="4"
+              cols="1"
               flat
               height="100%"
               class="d-flex align-end mt-auto flex-row-reverse"
             >
+              <v-btn
+                icon
+              >
+                <v-icon
+                  size="30"
+                >
+                  mdi-star-outline
+                </v-icon>
+              </v-btn>
               <v-btn
                 icon
                 :class="{
@@ -99,7 +108,7 @@
     <v-row>
       <v-col>
         <v-card
-          class="mx-auto pa-7 mt-n8"
+          class="mx-auto pa-7 mt-n13"
           flat
         >
           <v-row>
@@ -287,7 +296,7 @@
                         </v-btn>
                       </v-col>
                     </v-row>
-                    <v-row class="mt-10">
+                    <v-row class="mt-3">
                       <v-textarea
                         v-model="item.description"
                         outlined
