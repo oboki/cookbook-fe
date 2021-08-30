@@ -4,7 +4,7 @@
       <v-col cols="2" />
       <v-col cols="8">
         <v-row class="mt-10">
-          <h1>Hello Dylan!</h1>
+          <h1>Hello {{ username }}!</h1>
         </v-row>
         <v-row class="mt-10">
           <v-col>
@@ -22,8 +22,16 @@
   </v-container>
 </template>
 <script>
-export default {
-  name: 'NoticeView'
+import { createNamespacedHelpers } from 'vuex'
 
+const userHelper = createNamespacedHelpers('user')
+
+export default {
+  name: 'NoticeView',
+  computed: {
+    ...userHelper.mapState({
+      username: state => state.username
+    }),
+  },
 }
 </script>

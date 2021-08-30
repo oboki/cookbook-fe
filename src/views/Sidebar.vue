@@ -11,17 +11,28 @@
     <v-row>
       <v-col class="ml-3 text-left">
         <ul>
-          <li>amet,</li>
-          <li>lacinia,</li>
-          <li>massa,</li>
-          <li>Vestibulum</li>
+          <li
+            v-for="item in recent_search_keywords.slice().reverse()"
+            :key="item"
+          >
+            {{ item }}
+          </li>
         </ul>
       </v-col>
     </v-row>
   </aside>
 </template>
 <script>
+import { createNamespacedHelpers } from 'vuex'
+
+const userHelper = createNamespacedHelpers('user')
+
 export default {
-  name: 'Sidebar'
+  name: 'Sidebar',
+  computed: {
+    ...userHelper.mapState({
+      recent_search_keywords: state => state.recent_search_keywords,
+    }),
+  },
 }
 </script>

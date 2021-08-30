@@ -360,6 +360,9 @@
 <script>
 import * as httpApi from '@/api/httpApi';
 import Sidebar from '@/views/Sidebar'
+import { createNamespacedHelpers } from 'vuex'
+
+const userHelper = createNamespacedHelpers('user')
 
 export default {
   name: "SearchView",
@@ -387,6 +390,7 @@ export default {
   },
   watch: {
     '$route.query.s'() {
+      this.appendSearchKeyword(this.$route.query.s);
       this.fetchSearchResult();
     },
     '$route.query.more'() {
@@ -397,6 +401,7 @@ export default {
     }
   },
   created() {
+    this.appendSearchKeyword(this.$route.query.s);
     this.fetchSearchResult();
   },
   methods: {
@@ -438,6 +443,9 @@ export default {
         }
       );
     },
+    ...userHelper.mapActions([
+      'appendSearchKeyword'
+    ]),
   }
 }
 </script>

@@ -14,10 +14,15 @@
       type="text"
       :disabled="disabled == 1"
     >
+    {{ searchOpts }}
+    {{ message }}
+    <v-btn @click="callMutation('changed')" />
   </div>
 </template>
 <script>
 import http from '@/api/http';
+import { createNamespacedHelpers } from 'vuex'
+const messageHelper = createNamespacedHelpers('message')
 
 export default {
   name: 'Test',
@@ -28,10 +33,26 @@ export default {
       editableModel: {text: {a: "abc"}}
     }
   },
+  computed: {
+    searchOpts: {
+      get () {
+          return this.$store.getters['app/getSearchOpts']
+      }
+    },
+    ...messageHelper.mapState({
+      message: state => state.message
+    }),
+  },
   created() {
     this.test();
   },
   methods: {
+    ...messageHelper.mapMutations([
+      'changeMessage'
+    ]),
+    ...messageHelper.mapActions([
+      'callMutation'
+    ]),
     test() {
       console.log("test");
       http.post('/codes/add', {

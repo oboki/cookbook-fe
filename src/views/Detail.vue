@@ -12,7 +12,7 @@
             />
             <v-col cols="7">
               <v-row
-                :id="this.$route.params.is"
+                :id="this.$route.params.id"
                 class="ml-n4"
               >
                 <div class="text-left">
@@ -50,9 +50,29 @@
             >
               <v-btn
                 icon
+                :class="{
+                  'cookbook-display-none': !isBookmarked(detail.table.id),
+                  'cookbook-display-block': isBookmarked(detail.table.id)
+                }"
+                color="yellow"
+                @click="toggleBookmarked()"
               >
                 <v-icon
-                  size="30"
+                  size="35"
+                >
+                  mdi-star
+                </v-icon>
+              </v-btn>
+              <v-btn
+                icon
+                :class="{
+                  'cookbook-display-none': isBookmarked(detail.table.id),
+                  'cookbook-display-block': !isBookmarked(detail.table.id)
+                }"
+                @click="toggleBookmarked()"
+              >
+                <v-icon
+                  size="35"
                 >
                   mdi-star-outline
                 </v-icon>
@@ -60,8 +80,8 @@
               <v-btn
                 icon
                 :class="{
-                  'cookbook-editable-display-none': isEditable(detail.table.id),
-                  'cookbook-editable-display-block': !isEditable(detail.table.id)
+                  'cookbook-display-none': isEditable(detail.table.id),
+                  'cookbook-display-block': !isEditable(detail.table.id)
                 }"
                 @click="editable.push(detail.table.id)"
               >
@@ -74,8 +94,8 @@
               <v-btn
                 icon
                 :class="{
-                  'cookbook-editable-display-block': isEditable(detail.table.id),
-                  'cookbook-editable-display-none': !isEditable(detail.table.id)
+                  'cookbook-display-block': isEditable(detail.table.id),
+                  'cookbook-display-none': !isEditable(detail.table.id)
                 }"
                 @click="popEditable(detail.table.id)"
               >
@@ -88,8 +108,8 @@
               <v-btn
                 icon
                 :class="{
-                  'cookbook-editable-display-block': isEditable(detail.table.id),
-                  'cookbook-editable-display-none': !isEditable(detail.table.id)
+                  'cookbook-display-block': isEditable(detail.table.id),
+                  'cookbook-display-none': !isEditable(detail.table.id)
                 }"
                 @click="updateDocument('tables', detail.table.id)"
               >
@@ -255,8 +275,8 @@
                         <v-btn
                           icon
                           :class="{
-                            'cookbook-editable-display-none': isEditable(item.id),
-                            'cookbook-editable-display-block': !isEditable(item.id)
+                            'cookbook-display-none': isEditable(item.id),
+                            'cookbook-display-block': !isEditable(item.id)
                           }"
                           @click="editable.push(item.id)"
                         >
@@ -269,8 +289,8 @@
                         <v-btn
                           icon
                           :class="{
-                            'cookbook-editable-display-block': isEditable(item.id),
-                            'cookbook-editable-display-none': !isEditable(item.id)
+                            'cookbook-display-block': isEditable(item.id),
+                            'cookbook-display-none': !isEditable(item.id)
                           }"
                           @click="popEditable(item.id)"
                         >
@@ -283,8 +303,8 @@
                         <v-btn
                           icon
                           :class="{
-                            'cookbook-editable-display-block': isEditable(item.id),
-                            'cookbook-editable-display-none': !isEditable(item.id)
+                            'cookbook-display-block': isEditable(item.id),
+                            'cookbook-display-none': !isEditable(item.id)
                           }"
                           @click="updateDocument('columns', item.id)"
                         >
@@ -395,6 +415,9 @@ import * as httpApi from '@/api/httpApi';
 import http from '@/api/http';
 import CodeList from '@/views/CodeList';
 import UserComments from '@/views/UserComments.vue';
+import { createNamespacedHelpers } from 'vuex'
+
+const userHelper = createNamespacedHelpers('user')
 
 export default {
   name: "DetailView",
@@ -430,6 +453,11 @@ export default {
       testString: "This is Test",
     };
   },
+  computed: {
+    ...userHelper.mapState({
+      bookmark: state => state.bookmark
+    }),
+  },
   watch: {
     expanded: {
       handler(val, oldVal){
@@ -460,7 +488,6 @@ export default {
       httpApi.getDocument('tables', this.$route.params.id).then((res) => {
         res.data['id'] = this.$route.params.id;
         this.$set(this.detail, 'table', res.data);
-        console.log(this.detail.table);
       });
 
       httpApi.search(
@@ -516,6 +543,29 @@ export default {
         }
       });
     },
+    isBookmarked(val){
+      for (let i=0;i<this.bookmark.length;i++){
+        if (this.bookmark[i].id === val){
+          return true;
+        }
+      }
+      return false;
+    },
+    toggleBookmarked(){
+      if (this.isBookmarked(this.$route.params.id)){
+        this.popBookmark({
+          "id":this.$route.params.id,
+          "db_name":this.detail.table.db_name,
+          "table_name":this.detail.table.table_name
+        });
+      } else {
+        this.appendBookmark({
+          "id":this.$route.params.id,
+          "db_name":this.detail.table.db_name,
+          "table_name":this.detail.table.table_name
+        });
+      }
+    },
     updateDocument(index, id){
       let doc = {}
       if (index === 'tables'){
@@ -533,7 +583,13 @@ export default {
         console.log(res.data.status)
       });
       this.popEditable(id);
-    }
+    },
+    ...userHelper.mapActions([
+      'appendBookmark'
+    ]),
+    ...userHelper.mapActions([
+      'popBookmark'
+    ]),
   }
 }
 </script>
@@ -545,11 +601,11 @@ export default {
   border: none;
 }
 
-.cookbook-editable-display-block {
+.cookbook-display-block {
   display:block
 }
 
-.cookbook-editable-display-none {
+.cookbook-display-none {
   display:none
 }
 

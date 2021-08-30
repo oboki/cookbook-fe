@@ -57,12 +57,30 @@
               </v-card-title>
 
               <v-card-text class="mb-n7">
-                <v-radio-group>
-                  <v-radio label="통합검색" />
-                  <v-radio label="테이블" />
-                  <v-radio label="컬럼" />
-                  <v-radio label="유효값" />
-                  <v-radio label="사용자댓글" />
+                <v-radio-group
+                  v-model="search_opt"
+                  @change="updateSearchOpt"
+                >
+                  <v-radio
+                    label="통합검색"
+                    value="all"
+                  />
+                  <v-radio
+                    label="테이블"
+                    value="tables"
+                  />
+                  <v-radio
+                    label="컬럼"
+                    value="columns"
+                  />
+                  <v-radio
+                    label="유효값"
+                    value="codes"
+                  />
+                  <v-radio
+                    label="사용자댓글"
+                    value="comments"
+                  />
                 </v-radio-group>
               </v-card-text>
 
@@ -118,6 +136,9 @@
 </template>
 <script>
 import * as httpApi from '@/api/httpApi';
+import { createNamespacedHelpers } from 'vuex'
+
+const userHelper = createNamespacedHelpers('user')
 
 export default {
   name: 'DefaultLayout',
@@ -131,20 +152,50 @@ export default {
       drawer: false,
     };
   },
+  computed: {
+    ...userHelper.mapState({
+      username: state => state.username,
+      bookmark: state => state.bookmark,
+      search_opt : state => state.search_opt,
+      recent_search_keywords : state => state.recent_search_keywords,
+    }),
+  },
   watch: {
     autocomplete (val) {
       val && this.querySelections(val)
     },
   },
+  created() {
+    this.loadUserInfo();
+  },
   methods: {
+    ...userHelper.mapActions([
+      'loadUserInfo'
+    ]),
+    ...userHelper.mapActions([
+      'updateSearchOpt'
+    ]),
     search() {
       const s = this.select;
-      this.$router.push(
-        {
-          name: 'Search',
-          query: { s: s }
-        }
-      )
+      if (this.search_opt === "all") {
+        this.$router.push(
+          {
+            name: 'Search',
+            query: { s: s }
+          }
+        )
+      } else {
+        this.$router.push(
+          {
+            name: 'Search',
+            query: {
+              s: s,
+              more: this.search_opt,
+              page: 0
+            },
+          }
+        )
+      }
     },
     querySelections(val) {
       this.loading = true;
