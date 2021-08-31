@@ -1,4 +1,4 @@
-import http from '@/api/http';
+import * as httpApi from '@/api/httpApi';
 
 const state = {
   username: '',
@@ -27,21 +27,31 @@ const mutations = {
 }
 const actions = {
   loadUserInfo ({commit}, /**/){
-    http.get('/user').then((res) => {
+    httpApi.get('/user').then((res) => {
       const username = res.data.username;
-      http.get('/users/'+username).then((res) => {
+      httpApi.getDocument('users', username).then((res) => {
         commit('setUserInfo', res.data);
+      }).catch(error=>{
+        window.location.href = '/login?next=/cookbook';
       })
-    })
+    });
   },
-  updateSearchOpt ({commit}, value){
+  updateSearchOpt ({ commit, state }, value){
     commit('setSearchOpt', value);
-    // update user doc
+
+    httpApi.updateDocument('users', state.username, {
+      "search_opt": value
+    });
   },
-  appendSearchKeyword ({commit}, value){
-    const tmp = state.recent_search_keywords.filter(function(x) { return x !== value})
-    tmp.push(value)
+  appendSearchKeyword ({ commit, state }, value){
+    let tmp = state.recent_search_keywords.filter(function(x) { return x !== value})
+    tmp.push(value);
+    tmp = tmp.reverse().slice(0, 10).reverse();
+
     commit('setSearchKeyword', tmp);
+    httpApi.updateDocument('users', state.username, {
+      "recent_search_keywords": tmp
+    });
   },
   appendBookmark ({commit}, data){
     const tmp = [];
@@ -51,7 +61,11 @@ const actions = {
       }
     }
     tmp.push(data);
+
     commit('setBookmark', tmp);
+    httpApi.updateDocument('users', state.username, {
+      "bookmark": tmp
+    });
   },
   popBookmark ({commit}, data){
     const tmp = [];

@@ -117,9 +117,8 @@
         nav
         dense
       >
-        <v-list-item-group
-          v-model="group"
-        >
+        <v-list-item-group>
+          <!-- v-model="group" -->
           <v-list-item>
             <v-list-item-icon>
               <v-icon>mdi-airplane</v-icon>
@@ -150,6 +149,12 @@ export default {
       dialog: false,
       autocomplete: null,
       drawer: false,
+      icons: [
+        'mdi-facebook',
+        'mdi-twitter',
+        'mdi-linkedin',
+        'mdi-instagram',
+      ],
     };
   },
   computed: {

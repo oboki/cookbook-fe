@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col
-        v-if="$route.query.more==='tables'"
+        v-if="$route.query.more"
         cols="9"
       >
         <v-row
@@ -19,7 +19,11 @@
           </v-col>
           <v-col cols="9">
             <div class="text-h7 mt-7 ml-3">
-              {{ $route.query.page*10 + 1 }} - {{ (Number($route.query.page) + 1)* 10 }} / {{ total.value }}
+              {{ $route.query.page*10 + 1 }}
+              -
+              {{ (Number($route.query.page) + 1)* 10 > total.value ? total.value : (Number($route.query.page) + 1)* 10 }}
+              /
+              {{ total.value }}
             </div>
           </v-col>
           <v-spacer />
@@ -33,7 +37,18 @@
               class="text-h5 mt-2"
               style="text-align: right"
             >
-              테이블
+              <p v-if="$route.query.more==='tables'">
+                테이블
+              </p>
+              <p v-else-if="$route.query.more==='columns'">
+                컬럼
+              </p>
+              <p v-else-if="$route.query.more==='codes'">
+                유효값
+              </p>
+              <p v-else-if="$route.query.more==='comments'">
+                댓글
+              </p>
             </div>
             <div
               class="mb-7"
@@ -45,35 +60,22 @@
             />
           </v-col>
           <v-col cols="9">
-            <v-row
-              v-for="item in searchResult.tables"
-              :key="item._id"
-            >
-              <v-col
-                cols="9"
-                class="ml-2"
-              >
-                <router-link
-                  :to="{path: /detail/+item._id}"
-                  tag="div"
-                  class="link-detail"
-                  style="cursor:pointer"
-                >
-                  <div class="text-h6">
-                    {{ item._source.db_name }}.{{ item._source.table_name }}
-                  </div>
-                  <div class="text-h6">
-                    {{ item._source.entity_name }}
-                  </div>
-                  <div class="mt-2">
-                    {{ item._source.description }}
-                  </div>
-                  <div class="">
-                    - 컬럼 | {{ item._source.storage_type }}
-                  </div>
-                </router-link>
-              </v-col>
-            </v-row>
+            <table-search-list
+              v-if="$route.query.more==='tables'"
+              :items="searchResult.tables"
+            />
+            <column-search-list
+              v-if="$route.query.more==='columns'"
+              :items="searchResult.columns"
+            />
+            <code-search-list
+              v-if="$route.query.more==='codes'"
+              :items="searchResult.codes"
+            />
+            <comment-search-list
+              v-if="$route.query.more==='comments'"
+              :items="searchResult.comments"
+            />
             <div class="text-center pt-16 pb-10">
               <v-pagination
                 v-model="currentPage"
@@ -83,7 +85,6 @@
               />
             </div>
           </v-col>
-          <v-spacer />
         </v-row>
       </v-col>
       <v-col
@@ -144,35 +145,7 @@
             </div>
           </v-col>
           <v-col cols="9">
-            <v-row
-              v-for="item in searchResult.tables"
-              :key="item._id"
-            >
-              <v-col
-                cols="9"
-                class="ml-2"
-              >
-                <router-link
-                  :to="{path: /detail/+item._id}"
-                  tag="div"
-                  class="link-detail"
-                  style="cursor:pointer"
-                >
-                  <div class="text-h6">
-                    {{ item._source.db_name }}.{{ item._source.table_name }}
-                  </div>
-                  <div class="text-h6">
-                    {{ item._source.entity_name }}
-                  </div>
-                  <div class="mt-2">
-                    {{ item._source.description }}
-                  </div>
-                  <div class="">
-                    - 컬럼 | {{ item._source.storage_type }}
-                  </div>
-                </router-link>
-              </v-col>
-            </v-row>
+            <table-search-list :items="searchResult.tables" />
           </v-col>
           <v-spacer />
         </v-row>
@@ -203,35 +176,7 @@
             </div>
           </v-col>
           <v-col cols="9">
-            <v-row
-              v-for="item in searchResult.columns"
-              :key="item._id"
-            >
-              <v-col
-                cols="9"
-                class="ml-2"
-              >
-                <router-link
-                  :to="{path: /detail/+item._source.parent_id, hash: item._id}"
-                  tag="div"
-                  class="link-detail"
-                  style="cursor:pointer"
-                >
-                  <div class="text-h6">
-                    {{ item._source.column_name }}
-                  </div>
-                  <div class="text-h6">
-                    {{ item._source.attribute_name }}
-                  </div>
-                  <div class="">
-                    {{ item._source.db_name }}.{{ item._source.table_name }} | {{ item._source.entity_name }}
-                  </div>
-                  <div class="">
-                    {{ item._source.data_type }} | {{ item._source.data_length }} | 암호화 X | 개인정보항목 X
-                  </div>
-                </router-link>
-              </v-col>
-            </v-row>
+            <column-search-list :items="searchResult.columns" />
           </v-col>
           <v-spacer />
         </v-row>
@@ -262,32 +207,7 @@
             </div>
           </v-col>
           <v-col cols="9">
-            <v-row
-              v-for="item in searchResult.codes"
-              :key="item._id"
-            >
-              <v-col
-                cols="9"
-                class="ml-2"
-              >
-                <router-link
-                  :to="{path: /detail/+item._source.parent_id, hash: item._source.column_name}"
-                  tag="div"
-                  class="link-detail"
-                  style="cursor:pointer;"
-                >
-                  <div class="text-h6">
-                    {{ item._source.code }}
-                  </div>
-                  <div class="text-h6">
-                    {{ item._source.description }}
-                  </div>
-                  <div class="">
-                    {{ item._source.column_name }} {{ item._source.attribute_name }}
-                  </div>
-                </router-link>
-              </v-col>
-            </v-row>
+            <code-search-list :items="searchResult.codes" />
           </v-col>
           <v-spacer />
         </v-row>
@@ -318,35 +238,7 @@
             </div>
           </v-col>
           <v-col cols="9">
-            <v-row
-              v-for="item in searchResult.comments"
-              :key="item._id"
-            >
-              <v-col
-                cols="9"
-                class="ml-2"
-              >
-                <router-link
-                  :to="{path: /detail/+item._source.parent_id, hash: item._id}"
-                  tag="div"
-                  class="link-detail"
-                  style="cursor:pointer;"
-                >
-                  <div class="text-h6">
-                    {{ item._source.db_name }}.{{ item._source.table_name }}
-                  </div>
-                  <div class="text-h6">
-                    {{ item._source.entity_name_name }}
-                  </div>
-                  <div class="">
-                    {{ item._source.comment }}
-                  </div>
-                  <div class="">
-                    {{ item._source.author }}
-                  </div>
-                </router-link>
-              </v-col>
-            </v-row>
+            <comment-search-list :items="searchResult.comments" />
           </v-col>
           <v-spacer />
         </v-row>
@@ -360,6 +252,10 @@
 <script>
 import * as httpApi from '@/api/httpApi';
 import Sidebar from '@/views/Sidebar'
+import TableSearchList from '@/views/TableSearchList'
+import ColumnSearchList from '@/views/ColumnSearchList'
+import CodeSearchList from '@/views/CodeSearchList'
+import CommentSearchList from '@/views/CommentSearchList'
 import { createNamespacedHelpers } from 'vuex'
 
 const userHelper = createNamespacedHelpers('user')
@@ -367,7 +263,11 @@ const userHelper = createNamespacedHelpers('user')
 export default {
   name: "SearchView",
   components: {
-    Sidebar
+    Sidebar,
+    TableSearchList,
+    ColumnSearchList,
+    CodeSearchList,
+    CommentSearchList,
   },
   data() {
     return {

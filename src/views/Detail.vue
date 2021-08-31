@@ -556,13 +556,15 @@ export default {
         this.popBookmark({
           "id":this.$route.params.id,
           "db_name":this.detail.table.db_name,
-          "table_name":this.detail.table.table_name
+          "table_name":this.detail.table.table_name,
+          "entity_name":this.detail.table.entity_name
         });
       } else {
         this.appendBookmark({
           "id":this.$route.params.id,
           "db_name":this.detail.table.db_name,
-          "table_name":this.detail.table.table_name
+          "table_name":this.detail.table.table_name,
+          "entity_name":this.detail.table.entity_name
         });
       }
     },
@@ -572,7 +574,7 @@ export default {
         doc = this.detail.table;
       } else if (index === 'columns'){
         this.detail.columns.forEach(item => {
-          if(item.id == id) {
+          if(item.id === id) {
             doc = item
           }
         })

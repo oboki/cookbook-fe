@@ -14,6 +14,9 @@
           <li
             v-for="item in recent_search_keywords.slice().reverse()"
             :key="item"
+            class="link-detail"
+            style="cursor:pointer;"
+            @click="search(item)"
           >
             {{ item }}
           </li>
@@ -32,7 +35,36 @@ export default {
   computed: {
     ...userHelper.mapState({
       recent_search_keywords: state => state.recent_search_keywords,
+      search_opt : state => state.search_opt,
     }),
   },
+  methods: {
+    search(val) {
+      if (this.search_opt === "all") {
+        this.$router.push(
+          {
+            name: 'Search',
+            query: { s: val }
+          }
+        )
+      } else {
+        this.$router.push(
+          {
+            name: 'Search',
+            query: {
+              s: val,
+              more: this.search_opt,
+              page: 0
+            },
+          }
+        )
+      }
+    },
+  }
 }
 </script>
+<style>
+.link-detail:hover {
+    color: #929292;
+}
+</style>

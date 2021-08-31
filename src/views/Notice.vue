@@ -14,6 +14,18 @@
             <v-row>
               -
             </v-row>
+            <v-row>
+              <h2>신규 테이블</h2>
+            </v-row>
+            <v-row>
+              -
+            </v-row>
+            <v-row>
+              <h2>최근 변경</h2>
+            </v-row>
+            <v-row>
+              -
+            </v-row>
           </v-col>
         </v-row>
       </v-col>
