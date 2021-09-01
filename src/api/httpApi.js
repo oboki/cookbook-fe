@@ -52,6 +52,5 @@ export function updateDocument(index, id, doc){
   http.post('/'+index+'/edit/'+id, {
     data: doc
   }).then((res) => {
-    console.log(res.data.status)
   });
 }

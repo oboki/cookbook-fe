@@ -28,9 +28,14 @@
             {{ item._source.db_name }}.{{ item._source.table_name }} | {{ item._source.entity_name }}
           </div>
           <div
-            class="mb-n2"
+            class="mb-n1"
           >
             {{ item._source.data_type }} | {{ item._source.data_length }} | 암호화 X | 개인정보항목 X
+          </div>
+          <div
+            class="mb-n2"
+          >
+            {{ item._source.description }}
           </div>
         </router-link>
       </v-col>

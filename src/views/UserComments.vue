@@ -4,10 +4,10 @@
     flat
   >
     <v-row>
-      <v-col cols="2">
+      <v-col cols="1">
         <div class="text-h6 font-weight-black text-right" />
       </v-col>
-      <v-col cols="8">
+      <v-col cols="10">
         <v-row
           v-for="item in comments"
           :id="item.id"
@@ -23,7 +23,7 @@
             {{ item.author }}
             <v-icon>mdi-emoticon-outline</v-icon>
           </v-col>
-          <v-col cols="8">
+          <v-col cols="9">
             <v-text-field
               disabled
               :value="item.comment"
@@ -52,7 +52,7 @@
             {{ username }}
             <v-icon>mdi-emoticon-outline</v-icon>
           </v-col>
-          <v-col cols="8">
+          <v-col cols="9">
             <v-text-field
               v-model="comment"
               label="댓글을 남겨주세요."
@@ -71,6 +71,7 @@
           </v-col>
         </v-row>
       </v-col>
+      <v-col cols="1" />
     </v-row>
   </v-card>
 </template>
@@ -90,6 +91,10 @@ export default {
     tableId: {
       type: String,
       default: null
+    },
+    tableInfo: {
+      type: Object,
+      default: null
     }
   },
   data() {
@@ -106,6 +111,9 @@ export default {
     addComment(){
       const newComment = {
         "parent_id": this.tableId,
+        "db_name": this.tableInfo.db_name,
+        "table_name": this.tableInfo.table_name,
+        "entity_name": this.tableInfo.entity_name,
         "comment": this.comment,
         "author": this.username
       }

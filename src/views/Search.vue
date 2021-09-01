@@ -29,7 +29,7 @@
           <v-spacer />
         </v-row>
 
-        <v-row v-if="searchResult.tables.length">
+        <v-row v-if="searchResult.tables.length || searchResult.columns.length || searchResult.codes.length || searchResult.comments.length">
           <v-col
             cols="3"
           >
@@ -242,6 +242,7 @@
           </v-col>
           <v-spacer />
         </v-row>
+        <v-row class="mt-16" />
       </v-col>
       <v-col cols="3">
         <sidebar />
@@ -283,7 +284,7 @@ export default {
         'codes': [],
         'comments': [],
       },
-      total: null,
+      total: {value: 0},
       more: null,
       currentPage: 1
     };
@@ -300,6 +301,10 @@ export default {
       this.fetchSearchResult();
     }
   },
+  beforeMount() {
+    this.appendSearchKeyword(this.$route.query.s);
+    this.fetchSearchResult();
+  },
   created() {
     this.appendSearchKeyword(this.$route.query.s);
     this.fetchSearchResult();
@@ -312,6 +317,8 @@ export default {
           this.$route.query.s, 10,
           this.$route.query.page,
         ).then((res) => {
+          console.log(this.$route.query.more);
+          console.log("search result fetch success.");
           this.$set(
             this.searchResult,
             this.$route.query.more, []

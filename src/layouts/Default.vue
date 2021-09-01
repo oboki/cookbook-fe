@@ -7,7 +7,18 @@
     >
       <v-container>
         <v-row>
-          <v-app-bar-nav-icon @click="drawer = true" />
+          <v-btn
+            icon
+            @click="$router.go(-1)"
+          >
+            <v-icon>
+              mdi-chevron-left
+            </v-icon>
+          </v-btn>
+          <v-app-bar-nav-icon
+            class="ml-n4"
+            @click="drawer = true"
+          />
           <v-toolbar-title
             class="mr-1 mt-2 text-h5"
             style="cursor:pointer"
@@ -129,6 +140,7 @@
       </v-list>
     </v-navigation-drawer>
     <v-main>
+      {{ $route.windows }}
       <router-view :key="$route.path" />
     </v-main>
   </v-app>
@@ -217,6 +229,11 @@ export default {
         this.loading = false;
       }, 500);
     },
+    hasHistory() {
+      console.log(window.history.length);
+      console.log(window.history);
+      return window.history.length > 2
+    }
   }
 }
 </script>

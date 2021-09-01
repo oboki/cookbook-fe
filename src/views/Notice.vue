@@ -15,7 +15,19 @@
               -
             </v-row>
             <v-row>
+              <h2>가장 많은 관심을 받은 테이블</h2>
+            </v-row>
+            <v-row>
+              -
+            </v-row>
+            <v-row>
               <h2>신규 테이블</h2>
+            </v-row>
+            <v-row>
+              -
+            </v-row>
+            <v-row>
+              <h2>신규 컬럼</h2>
             </v-row>
             <v-row>
               -

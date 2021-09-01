@@ -44,7 +44,13 @@ const actions = {
     });
   },
   appendSearchKeyword ({ commit, state }, value){
-    let tmp = state.recent_search_keywords.filter(function(x) { return x !== value})
+    let tmp = [];
+    try {
+      tmp = state.recent_search_keywords.filter(function(x) { return x !== value})
+    } catch (error) {
+      console.log(error);
+      tmp = [];
+    }
     tmp.push(value);
     tmp = tmp.reverse().slice(0, 10).reverse();
 
