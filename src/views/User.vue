@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col cols="2" />
-      <v-col cols="8">
+      <v-col cols="9">
         <v-row class="mt-10">
           <v-col>
             <v-row>
@@ -30,8 +30,6 @@
               </ul>
             </v-row>
           </v-col>
-        </v-row>
-        <v-row class="mt-10">
           <v-col>
             <v-row>
               <h2>내가 남긴 댓글</h2>
@@ -58,12 +56,19 @@
                     </p>
                   </router-link>
                 </li>
+                <p
+                  v-if="hasMoreComment"
+                  style="color: rgb(41, 90, 221); text-decoration: underline; cursor: pointer;"
+                  @click="fetchMoreComment"
+                >
+                  더 불러오기
+                </p>
               </ul>
             </v-row>
           </v-col>
         </v-row>
       </v-col>
-      <v-col cols="2" />
+      <v-col cols="1" />
     </v-row>
   </v-container>
 </template>
@@ -79,7 +84,9 @@ export default {
   },
   data() {
     return {
-      comments: null
+      comments: [],
+      currentPageForComment: 0,
+      hasMoreComment: true
     }
   },
   computed: {
@@ -94,13 +101,20 @@ export default {
   methods: {
     searchCommentbyAuthor() {
       httpApi.search(
-        'comments', this.username,
-        1000, 0, ['by-author']
+        'comments', this.username, 10,
+        this.currentPageForComment, ['by-author']
       ).then((res) => {
-        this.comments = res.data.hits;
+        this.comments = this.comments.concat(res.data.hits);
+        if (res.data.hits.length === 0) {
+          this.hasMoreComment = false;
+        }
       });
-    }
-  },
+    },
+    fetchMoreComment() {
+      this.currentPageForComment = this.currentPageForComment + 1;
+      this.searchCommentbyAuthor();
+    },
+  }
 }
 </script>
 <style>

@@ -67,32 +67,63 @@
                 검색 옵션
               </v-card-title>
 
-              <v-card-text class="mb-n7">
-                <v-radio-group
-                  v-model="search_opt"
-                  @change="updateSearchOpt"
-                >
-                  <v-radio
-                    label="통합검색"
-                    value="all"
-                  />
-                  <v-radio
-                    label="테이블"
-                    value="tables"
-                  />
-                  <v-radio
-                    label="컬럼"
-                    value="columns"
-                  />
-                  <v-radio
-                    label="유효값"
-                    value="codes"
-                  />
-                  <v-radio
-                    label="사용자댓글"
-                    value="comments"
-                  />
-                </v-radio-group>
+              <v-card-text>
+                <v-row>
+                  <v-col>
+                    <h3 class="pt-5">
+                      검색 대상
+                    </h3>
+                    <v-radio-group
+                      v-model="search_opts.target"
+                      @change="updateSearchOpts"
+                    >
+                      <v-radio
+                        label="통합검색"
+                        value="all"
+                      />
+                      <v-radio
+                        label="테이블"
+                        value="tables"
+                      />
+                      <v-radio
+                        label="컬럼"
+                        value="columns"
+                      />
+                      <v-radio
+                        label="유효값"
+                        value="codes"
+                      />
+                      <v-radio
+                        label="사용자댓글"
+                        value="comments"
+                      />
+                    </v-radio-group>
+                  </v-col>
+                  <v-col>
+                    <h3 class="pt-5 pb-5">
+                      통합검색 페이지크기
+                    </h3>
+                    <v-select
+                      v-model="search_opts.pagesize_for_all"
+                      :items="select_pagesize"
+                      label="Rows per page"
+                      outlined
+                      :disabled="search_opts.target!=='all'"
+                      @change="updateSearchOpts"
+                    />
+                    <h3 class="mt-n3 pb-5">
+                      단일검색 페이지크기
+                    </h3>
+                    <v-select
+                      v-model="search_opts.pagesize_for_single"
+                      :items="select_pagesize"
+                      label="Rows per page"
+                      outlined
+                      :disabled="search_opts.target==='all'"
+                      @change="updateSearchOpts"
+                    />
+                  </v-col>
+                </v-row>
               </v-card-text>
 
               <v-divider />
@@ -161,6 +192,7 @@ export default {
       dialog: false,
       autocomplete: null,
       drawer: false,
+      select_pagesize: [4,7,10,20],
       icons: [
         'mdi-facebook',
         'mdi-twitter',
@@ -173,7 +205,7 @@ export default {
     ...userHelper.mapState({
       username: state => state.username,
       bookmark: state => state.bookmark,
-      search_opt : state => state.search_opt,
+      search_opts : state => state.search_opts,
       recent_search_keywords : state => state.recent_search_keywords,
     }),
   },
@@ -190,11 +222,11 @@ export default {
       'loadUserInfo'
     ]),
     ...userHelper.mapActions([
-      'updateSearchOpt'
+      'updateSearchOpts'
     ]),
     search() {
       const s = this.select;
-      if (this.search_opt === "all") {
+      if (this.search_opts.target === "all") {
         this.$router.push(
           {
             name: 'Search',
@@ -207,7 +239,7 @@ export default {
             name: 'Search',
             query: {
               s: s,
-              more: this.search_opt,
+              more: this.search_opts.target,
               page: 0
             },
           }
@@ -233,7 +265,7 @@ export default {
       console.log(window.history.length);
       console.log(window.history);
       return window.history.length > 2
-    }
+    },
   }
 }
 </script>

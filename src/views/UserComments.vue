@@ -4,10 +4,7 @@
     flat
   >
     <v-row>
-      <v-col cols="1">
-        <div class="text-h6 font-weight-black text-right" />
-      </v-col>
-      <v-col cols="10">
+      <v-col cols="12">
         <v-row
           v-for="item in comments"
           :id="item.id"
@@ -71,7 +68,6 @@
           </v-col>
         </v-row>
       </v-col>
-      <v-col cols="1" />
     </v-row>
   </v-card>
 </template>

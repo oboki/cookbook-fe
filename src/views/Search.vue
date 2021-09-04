@@ -18,12 +18,21 @@
             </div>
           </v-col>
           <v-col cols="9">
-            <div class="text-h7 mt-7 ml-3">
-              {{ $route.query.page*10 + 1 }}
+            <div
+              v-if="total.value"
+              class="text-h7 mt-7 ml-3"
+            >
+              {{ $route.query.page*search_opts.pagesize_for_single+1 }}
               -
-              {{ (Number($route.query.page) + 1)* 10 > total.value ? total.value : (Number($route.query.page) + 1)* 10 }}
+              {{ (Number($route.query.page)+1)*search_opts.pagesize_for_single > total.value ? total.value : (Number($route.query.page)+1)*search_opts.pagesize_for_single }}
               /
               {{ total.value }}
+            </div>
+            <div
+              v-else
+              class="text-h7 mt-7 ml-3"
+            >
+              검색 결과가 없습니다.
             </div>
           </v-col>
           <v-spacer />
@@ -79,7 +88,7 @@
             <div class="text-center pt-16 pb-10">
               <v-pagination
                 v-model="currentPage"
-                :length="Math.floor(Number(total.value) / 10) + 1"
+                :length="Math.floor(Number(total.value) / search_opts.pagesize_for_single) + 1"
                 :total-visible="10"
                 @input="handlePageChange"
               />
@@ -110,8 +119,17 @@
             </div>
           </v-col>
           <v-col cols="9">
-            <div class="text-h7 mt-7 ml-3">
-              통합검색 결과는 항목별로 4 건씩 조회됩니다.
+            <div
+              v-if="searchResult.tables.length || searchResult.columns.length || searchResult.codes.length || searchResult.comments.length"
+              class="text-h7 mt-7 ml-3"
+            >
+              더보기 버튼을 눌러 항목별 검색결과를 더 확인하세요.
+            </div>
+            <div
+              v-else
+              class="text-h7 mt-7 ml-3"
+            >
+              검색결과가 없습니다.
             </div>
           </v-col>
           <v-spacer />
@@ -289,6 +307,11 @@ export default {
       currentPage: 1
     };
   },
+  computed: {
+    ...userHelper.mapState({
+      search_opts : state => state.search_opts,
+    }),
+  },
   watch: {
     '$route.query.s'() {
       this.appendSearchKeyword(this.$route.query.s);
@@ -314,7 +337,8 @@ export default {
       if (this.$route.query.more){
         httpApi.search(
           this.$route.query.more,
-          this.$route.query.s, 10,
+          this.$route.query.s,
+          this.search_opts.pagesize_for_single,
           this.$route.query.page,
         ).then((res) => {
           console.log(this.$route.query.more);
@@ -331,7 +355,11 @@ export default {
         });
       } else {
         this.searchTargets.forEach(target => {
-          httpApi.search(target, this.$route.query.s).then((res) => {
+          httpApi.search(
+            target,
+            this.$route.query.s,
+            this.search_opts.pagesize_for_all,
+            ).then((res) => {
             this.$set(this.searchResult, target, []);
             this.$set(this.searchResult, target, res.data.hits);
           });

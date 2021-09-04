@@ -18,7 +18,7 @@
                 <div class="text-left" />
               </v-row>
               <v-row>
-                <div class="text-h4 text-left">
+                <div class="text-h4 text-left pl-7">
                   {{ detail.table.db_name }}.{{ detail.table.table_name }}
                   <v-btn
                     icon
@@ -59,7 +59,8 @@
                 <v-text-field
                   v-model="detail.table.entity_name"
                   :disabled="!isEditable(this.$route.params.id)"
-                  class="mt-n5 text-h5"
+                  class="mt-n5 text-h5 pl-7"
+                  style="font-style: italic;"
                 />
               </v-row>
             </v-col>
@@ -67,7 +68,8 @@
               cols="1"
               flat
               height="100%"
-              class="d-flex align-end mt-auto flex-row-reverse"
+              class="d-flex flex-row-reverse"
+              align-self="start"
             >
               <v-btn
                 icon
@@ -128,15 +130,29 @@
               cols="1"
             />
             <v-col cols="10">
-              <v-textarea
-                v-model="detail.table.description"
-                outlined
-                label="테이블 설명"
-                :disabled="!isEditable(this.$route.params.id)"
-                rows="4"
-                style="display:block"
-                class="cookbook-editable"
-              />
+              <v-row class="mt-n4">
+                <v-col
+                  cols="2"
+                  style="text-align: right"
+                  class="font-weight-bold"
+                >
+                  테이블 설명
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="12"
+                  md="10"
+                >
+                  <v-textarea
+                    v-model="detail.table.description"
+                    outlined
+                    :disabled="!isEditable(this.$route.params.id)"
+                    rows="4"
+                    style="display:block"
+                    class="cookbook-editable"
+                  />
+                </v-col>
+              </v-row>
               <v-row class="mt-n4">
                 <v-col
                   cols="2"
@@ -196,22 +212,26 @@
                 >
                   통계정보
                 </v-col>
-                <v-col cols="10">
+                <v-col
+                  cols="12"
+                  sm="12"
+                  md="10"
+                >
                   <v-simple-table>
                     <template v-slot:default>
                       <thead>
                         <tr>
                           <th class="text-left">
-                            # of distinct values
+                            part_key
                           </th>
                           <th class="text-left">
-                            # nulls
+                            # Rows
                           </th>
                           <th class="text-left">
-                            max size
+                            # Files
                           </th>
                           <th class="text-left">
-                            avg size
+                            Size
                           </th>
                         </tr>
                       </thead>
@@ -227,6 +247,290 @@
                   </v-simple-table>
                 </v-col>
               </v-row>
+
+              <v-row class="mt-n4">
+                <v-col
+                  cols="2"
+                  style="text-align: right"
+                  class="font-weight-bold"
+                >
+                  컬럼
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="12"
+                  md="10"
+                >
+                  <v-data-table
+                    :headers="tableHeaders"
+                    :items="detail.columns"
+                    :single-expand="singleExpand"
+                    :expanded.sync="expanded"
+                    :items-per-page="-1"
+                    item-key="position"
+                    show-expand
+                  >
+                    <template
+                      :id="item.id"
+                      v-slot:expanded-item="{ headers, item }"
+                    >
+                      <div :id="item.id" />
+                      <td
+                        :colspan="headers.length"
+                        class="elevation-0"
+                      >
+                        <v-row
+                          class="pt-10"
+                        >
+                          <v-col
+                            cols="10"
+                          >
+                            <v-row>
+                              <div class="text-h5 text-left">
+                                {{ item.column_name }}
+                              </div>
+                            </v-row>
+                            <v-row>
+                              <v-text-field
+                                v-model="item.attribute_name"
+                                :disabled="!isEditable(item.id)"
+                                class="text-h6 text-left mt-n4"
+                              />
+                            </v-row>
+                          </v-col>
+                          <v-spacer />
+                          <v-col
+                            cols="2"
+                            flat
+                            class="d-flex flex-row-reverse"
+                            align-self="start"
+                          >
+                            <v-btn
+                              icon
+                              :class="{
+                                'cookbook-display-none': isEditable(item.id),
+                                'cookbook-display-block': !isEditable(item.id)
+                              }"
+                              @click="editable.push(item.id)"
+                            >
+                              <v-icon
+                                size="30"
+                              >
+                                mdi-square-edit-outline
+                              </v-icon>
+                            </v-btn>
+                            <v-btn
+                              icon
+                              :class="{
+                                'cookbook-display-block': isEditable(item.id),
+                                'cookbook-display-none': !isEditable(item.id)
+                              }"
+                              @click="popEditable(item.id)"
+                            >
+                              <v-icon
+                                size="30"
+                              >
+                                mdi-close
+                              </v-icon>
+                            </v-btn>
+                            <v-btn
+                              icon
+                              :class="{
+                                'cookbook-display-block': isEditable(item.id),
+                                'cookbook-display-none': !isEditable(item.id)
+                              }"
+                              @click="updateDocument('columns', item.id)"
+                            >
+                              <v-icon
+                                size="30"
+                              >
+                                mdi-check
+                              </v-icon>
+                            </v-btn>
+                          </v-col>
+                        </v-row>
+                        <v-row class="mt-n1">
+                          <v-col
+                            cols="2"
+                            style="text-align: right"
+                            class="font-weight-bold"
+                          >
+                            컬럼설명
+                          </v-col>
+                          <v-col cols="10">
+                            <v-textarea
+                              v-model="item.description"
+                              outlined
+                              :disabled="!isEditable(item.id)"
+                              rows="3"
+                              class="cookbook-editable"
+                              style="display:block"
+                            />
+                          </v-col>
+                        </v-row>
+
+                        <v-row class="mt-n7">
+                          <v-col
+                            cols="2"
+                            style="text-align: right"
+                            class="font-weight-bold"
+                          >
+                            데이터타입
+                          </v-col>
+                          <v-col cols="10">
+                            <v-text-field
+                              v-model="item.data_type"
+                              disabled
+                              class="text-left mt-n4"
+                            />
+                          </v-col>
+                        </v-row>
+
+                        <v-row class="mt-n7">
+                          <v-col
+                            cols="2"
+                            style="text-align: right"
+                            class="font-weight-bold"
+                          >
+                            데이터크기
+                          </v-col>
+                          <v-col cols="10">
+                            <v-text-field
+                              v-model="item.data_length"
+                              disabled
+                              class="text-left mt-n4"
+                            />
+                          </v-col>
+                        </v-row>
+
+                        <v-row class="mt-n7">
+                          <v-col
+                            cols="2"
+                            style="text-align: right"
+                            class="font-weight-bold"
+                          >
+                            데이터도메인
+                          </v-col>
+                          <v-col cols="10">
+                            <v-text-field
+                              v-model="item.data_domain"
+                              disabled
+                              class="text-left mt-n4"
+                            />
+                          </v-col>
+                        </v-row>
+
+                        <v-row class="mt-n7">
+                          <v-col
+                            cols="2"
+                            style="text-align: right"
+                            class="font-weight-bold"
+                          >
+                            개인정보여부
+                          </v-col>
+                          <v-col cols="10">
+                            <v-text-field
+                              v-model="item.is_protected"
+                              disabled
+                              class="text-left mt-n4"
+                            />
+                          </v-col>
+                        </v-row>
+
+                        <v-row class="mt-n7">
+                          <v-col
+                            cols="2"
+                            style="text-align: right"
+                            class="font-weight-bold"
+                          >
+                            암호화여부
+                          </v-col>
+                          <v-col cols="10">
+                            <v-text-field
+                              v-model="item.is_encrypted"
+                              disabled
+                              class="text-left mt-n4"
+                            />
+                          </v-col>
+                        </v-row>
+
+                        <v-row class="mt-n7">
+                          <v-col
+                            cols="2"
+                            style="text-align: right"
+                            class="font-weight-bold"
+                          >
+                            통계정보
+                          </v-col>
+                          <v-col cols="10">
+                            <v-simple-table>
+                              <template v-slot:default>
+                                <thead>
+                                  <tr>
+                                    <th class="text-left">
+                                      # of distinct values
+                                    </th>
+                                    <th class="text-left">
+                                      # nulls
+                                    </th>
+                                    <th class="text-left">
+                                      max size
+                                    </th>
+                                    <th class="text-left">
+                                      avg size
+                                    </th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                  </tr>
+                                </tbody>
+                              </template>
+                            </v-simple-table>
+                          </v-col>
+                        </v-row>
+
+                        <v-row class="mb-2 pb-7 mt-n4">
+                          <v-col
+                            cols="2"
+                            style="text-align: right"
+                            class="font-weight-bold"
+                          >
+                            유효값
+                          </v-col>
+                          <v-col cols="10">
+                            <code-list
+                              :table-id="item.parent_id"
+                              :column-name="item.column_name"
+                              :codes="codes[item.column_name]"
+                            />
+                          </v-col>
+                        </v-row>
+                      </td>
+                    </template>
+                  </v-data-table>
+                </v-col>
+              </v-row>
+              <v-row class="mt-n4">
+                <v-col
+                  cols="2"
+                  style="text-align: right"
+                  class="font-weight-bold"
+                >
+                  사용자 댓글
+                </v-col>
+                <v-col cols="10">
+                  <user-comments
+                    :comments="detail.comments"
+                    :table-id="this.$route.params.id"
+                    :table-info="detail.table"
+                  />
+                </v-col>
+              </v-row>
             </v-col>
             <v-col
               cols="1"
@@ -236,227 +540,8 @@
       </v-col>
     </v-row>
 
-    <v-row class="mt-4">
-      <v-col>
-        <v-card
-          class="mx-auto pa-4"
-          flat
-        >
-          <v-row
-            class="mt-n14"
-          >
-            <v-col cols="1" />
-            <v-col cols="10">
-              <v-data-table
-                :headers="tableHeaders"
-                :items="detail.columns"
-                :single-expand="singleExpand"
-                :expanded.sync="expanded"
-                :items-per-page="-1"
-                item-key="position"
-                show-expand
-                style="max-width:calc(100%);"
-              >
-                <template
-                  :id="item.id"
-                  v-slot:expanded-item="{ headers, item }"
-                >
-                  <div :id="item.id" />
-                  <td
-                    :colspan="headers.length"
-                    class="elevation-0"
-                  >
-                    <v-row
-                      class="pt-10"
-                    >
-                      <v-col
-                        cols="10"
-                      >
-                        <v-row>
-                          <div class="text-h5 text-left">
-                            {{ item.column_name }}
-                          </div>
-                        </v-row>
-                        <v-row>
-                          <v-text-field
-                            v-model="item.attribute_name"
-                            :disabled="!isEditable(item.id)"
-                            class="text-h6 text-left mt-n4"
-                          />
-                        </v-row>
-                      </v-col>
-                      <v-spacer />
-                      <v-col
-                        cols="2"
-                        flat
-                        class="d-flex align-end mt-auto flex-row-reverse"
-                      >
-                        <v-btn
-                          icon
-                          :class="{
-                            'cookbook-display-none': isEditable(item.id),
-                            'cookbook-display-block': !isEditable(item.id)
-                          }"
-                          @click="editable.push(item.id)"
-                        >
-                          <v-icon
-                            size="30"
-                          >
-                            mdi-square-edit-outline
-                          </v-icon>
-                        </v-btn>
-                        <v-btn
-                          icon
-                          :class="{
-                            'cookbook-display-block': isEditable(item.id),
-                            'cookbook-display-none': !isEditable(item.id)
-                          }"
-                          @click="popEditable(item.id)"
-                        >
-                          <v-icon
-                            size="30"
-                          >
-                            mdi-close
-                          </v-icon>
-                        </v-btn>
-                        <v-btn
-                          icon
-                          :class="{
-                            'cookbook-display-block': isEditable(item.id),
-                            'cookbook-display-none': !isEditable(item.id)
-                          }"
-                          @click="updateDocument('columns', item.id)"
-                        >
-                          <v-icon
-                            size="30"
-                          >
-                            mdi-check
-                          </v-icon>
-                        </v-btn>
-                      </v-col>
-                    </v-row>
-                    <v-row class="mt-3">
-                      <v-textarea
-                        v-model="item.description"
-                        outlined
-                        label="컬럼 설명"
-                        :disabled="!isEditable(item.id)"
-                        rows="3"
-                        class="cookbook-editable"
-                        style="display:block"
-                      />
-                    </v-row>
-
-                    <v-row class="mt-n4">
-                      <v-col
-                        cols="2"
-                        style="text-align: right"
-                        class="font-weight-bold"
-                      >
-                        데이터크기
-                      </v-col>
-                      <v-col cols="10">
-                        <v-text-field
-                          v-model="item.data_length"
-                          disabled
-                          class="text-left mt-n4"
-                        />
-                      </v-col>
-                    </v-row>
-
-                    <v-row class="mt-n4">
-                      <v-col
-                        cols="2"
-                        style="text-align: right"
-                        class="font-weight-bold"
-                      >
-                        개인정보포함여부
-                      </v-col>
-                      <v-col cols="10">
-                        <v-text-field
-                          v-model="item.is_protected"
-                          disabled
-                          class="text-left mt-n4"
-                        />
-                      </v-col>
-                    </v-row>
-
-                    <v-row class="mt-n4">
-                      <v-col
-                        cols="2"
-                        style="text-align: right"
-                        class="font-weight-bold"
-                      >
-                        통계정보
-                      </v-col>
-                      <v-col cols="10">
-                        <v-simple-table
-                          dense
-                        >
-                          <template v-slot:default>
-                            <thead>
-                              <tr>
-                                <th class="text-left">
-                                  # of distinct values
-                                </th>
-                                <th class="text-left">
-                                  # nulls
-                                </th>
-                                <th class="text-left">
-                                  max size
-                                </th>
-                                <th class="text-left">
-                                  avg size
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>-</td>
-                              </tr>
-                            </tbody>
-                          </template>
-                        </v-simple-table>
-                      </v-col>
-                    </v-row>
-
-                    <v-row class="mb-2 pb-7 mt-n4">
-                      <v-col
-                        cols="2"
-                        style="text-align: right"
-                        class="font-weight-bold"
-                      >
-                        유효값
-                      </v-col>
-                      <v-col cols="10">
-                        <code-list
-                          :table-id="item.parent_id"
-                          :column-name="item.column_name"
-                          :codes="codes[item.column_name]"
-                        />
-                      </v-col>
-                    </v-row>
-                  </td>
-                </template>
-              </v-data-table>
-            </v-col>
-            <v-col cols="1" />
-          </v-row>
-        </v-card>
-      </v-col>
-    </v-row>
-
     <v-row class="pb-7">
-      <v-col>
-        <user-comments
-          :comments="detail.comments"
-          :table-id="this.$route.params.id"
-          :table-info="detail.table"
-        />
-      </v-col>
+      <v-col />
     </v-row>
   </v-container>
 </template>
@@ -487,13 +572,24 @@ export default {
           sortable: false,
           value: "position",
         },
-        { text: "컬럼명", value: "column_name" },
-        { text: "속성명", value: "attribute_name" },
-        { text: "데이터타입", value: "data_type" },
+        {
+          text: "컬럼명",
+          value: "column_name",
+          width: 130
+        },
+        {
+          text: "속성명",
+          value: "attribute_name",
+          width: 130
+        },
+        {
+          text: "데이터타입",
+          value: "data_type",
+          width: 130
+        },
         {
           text: "설명",
           value: "description",
-          width: 400
         },
         { text: "", value: "data-table-expand" },
       ],

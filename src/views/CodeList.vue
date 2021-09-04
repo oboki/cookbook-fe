@@ -1,8 +1,6 @@
 <template>
   <div>
-    <v-simple-table
-      dense
-    >
+    <v-simple-table>
       <template>
         <thead>
           <tr>
