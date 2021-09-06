@@ -2,6 +2,7 @@
   <v-app>
     <v-app-bar
       dark
+      color="primary"
       app
       short
     >
@@ -74,7 +75,7 @@
                       검색 대상
                     </h3>
                     <v-radio-group
-                      v-model="search_opts.target"
+                      v-model="searchOpts.target"
                       @change="updateSearchOpts"
                     >
                       <v-radio
@@ -104,22 +105,24 @@
                       통합검색 페이지크기
                     </h3>
                     <v-select
-                      v-model="search_opts.pagesize_for_all"
-                      :items="select_pagesize"
+                      v-model="searchOpts.pagesize.all"
+                      :items="selectPagesize"
                       label="Rows per page"
+                      dense
                       outlined
-                      :disabled="search_opts.target!=='all'"
+                      :disabled="searchOpts.target!=='all'"
                       @change="updateSearchOpts"
                     />
                     <h3 class="mt-n3 pb-5">
                       단일검색 페이지크기
                     </h3>
                     <v-select
-                      v-model="search_opts.pagesize_for_single"
-                      :items="select_pagesize"
+                      v-model="searchOpts.pagesize.single"
+                      :items="selectPagesize"
                       label="Rows per page"
+                      dense
                       outlined
-                      :disabled="search_opts.target==='all'"
+                      :disabled="searchOpts.target==='all'"
                       @change="updateSearchOpts"
                     />
                   </v-col>
@@ -192,26 +195,25 @@ export default {
       dialog: false,
       autocomplete: null,
       drawer: false,
-      select_pagesize: [4,7,10,20],
-      icons: [
-        'mdi-facebook',
-        'mdi-twitter',
-        'mdi-linkedin',
-        'mdi-instagram',
-      ],
+      selectPagesize: [4,7,10,20],
     };
   },
   computed: {
     ...userHelper.mapState({
       username: state => state.username,
       bookmark: state => state.bookmark,
-      search_opts : state => state.search_opts,
-      recent_search_keywords : state => state.recent_search_keywords,
+      searchOpts : state => state.searchOpts,
+      recentSearchKeywords : state => state.recentSearchKeywords,
     }),
   },
   watch: {
     autocomplete (val) {
       val && this.querySelections(val)
+    },
+    '$route.query.s'() {
+      if (this.$route.name === 'Search') {
+        this.select = this.$route.query.s;
+      }
     },
   },
   created() {
@@ -226,29 +228,52 @@ export default {
     ]),
     search() {
       const s = this.select;
-      if (this.search_opts.target === "all") {
+
+      if (this.searchOpts.target === "all") {
         this.$router.push(
           {
             name: 'Search',
             query: { s: s }
           }
-        )
+        ).catch(err => {
+          this.$router.push(
+            {
+              name: 'Search',
+              query: { s: s , retry: true },
+
+            }
+          )
+        })
       } else {
         this.$router.push(
           {
             name: 'Search',
             query: {
               s: s,
-              more: this.search_opts.target,
+              more: this.searchOpts.target,
               page: 0
             },
           }
-        )
+        ).catch(err => {
+          this.$router.push(
+            {
+              name: 'Search',
+              query: {
+                s: s,
+                more: this.searchOpts.target,
+                page: 0,
+                retry: true
+              },
+
+            }
+          )
+        })
       }
     },
     querySelections(val) {
       this.loading = true;
       this.items = [];
+
       setTimeout(()=>{
         httpApi.search(
           'autocomplete_keywords', val,
@@ -261,13 +286,11 @@ export default {
         this.loading = false;
       }, 500);
     },
-    hasHistory() {
-      console.log(window.history.length);
-      console.log(window.history);
-      return window.history.length > 2
-    },
   }
 }
 </script>
 <style>
+body {
+  min-width: 580px !important;
+}
 </style>

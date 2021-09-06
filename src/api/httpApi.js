@@ -1,7 +1,8 @@
 import http from './http';
 
 export function search(
-  index, val, size=4, page=0, opts=[]
+  index, val, size=4, page=0, opts=[],
+  advancedSearchEnabled=false, advanced=[]
 ) {
   let URL = [
     "/", index, "/search?s=", val,
@@ -11,7 +12,14 @@ export function search(
     URL = [URL, ["&", opt, "=true"].join("")].join("")
   })
 
-  return http.get(`${URL}`)
+  if (advancedSearchEnabled) {
+    return http.post(`${URL}`, {
+      data: advanced
+    });
+  } else {
+    return http.get(`${URL}`)
+  }
+
 }
 
 export function get(val) {
@@ -49,8 +57,11 @@ export function deleteDocument(
 }
 
 export function updateDocument(index, id, doc){
-  http.post('/'+index+'/edit/'+id, {
-    data: doc
-  }).then((res) => {
-  });
+  return new Promise((resolve, reject) => {
+    http.post('/'+index+'/edit/'+id, {
+      data: doc
+    }).then((res) => {
+      resolve(res);
+    });
+  })
 }

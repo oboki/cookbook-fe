@@ -122,9 +122,7 @@ export default {
       this.comment=null;
     },
     deleteComment(val){
-      console.log('delete called');
       httpApi.deleteDocument('comments', val).then((res) => {
-        console.log(res);
       });
       for(let i=0;i<this.comments.length;i++){
         if(this.comments[i].id === val){

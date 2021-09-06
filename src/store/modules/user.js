@@ -3,15 +3,8 @@ import * as httpApi from '@/api/httpApi';
 const state = {
   username: '',
   bookmark: [],
-  search_opts: {
-    target: "all",
-    pagesize_for_all: 4,
-    pagesize_for_single: 10,
-    advanced: {
-      enabled: false,
-    }
-  },
-  recent_search_keywords: [],
+  searchOpts: {},
+  recentSearchKeywords: [],
 }
 const getters = {
 }
@@ -19,15 +12,14 @@ const mutations = {
   setUserInfo(state, data) {
     state.username = data.username;
     state.bookmark = data.bookmark;
-    state.search_opts = data.search_opts;
-    console.log(state.search_opts);
-    state.recent_search_keywords = data.recent_search_keywords;
+    state.searchOpts = data.search_opts;
+    state.recentSearchKeywords = data.recent_search_keywords;
   },
   setSearchOpts(state, value) {
-    state.search_opts = value;
+    state.searchOpts = value;
   },
   setSearchKeyword(state, value) {
-    state.recent_search_keywords = value;
+    state.recentSearchKeywords = value;
   },
   setBookmark(state, value) {
     state.bookmark = value;
@@ -35,11 +27,9 @@ const mutations = {
 }
 const actions = {
   loadUserInfo ({commit}, /**/){
-    httpApi.get('/user').then((res) => {
+    httpApi.get('/whoami').then((res) => {
       const username = res.data.username;
       httpApi.getDocument('users', username).then((res) => {
-        console.log("fetching userinfo.");
-        console.log(res.data);
         commit('setUserInfo', res.data);
       }).catch(error=>{
         window.location.href = '/login?next=/cookbook';
@@ -47,18 +37,23 @@ const actions = {
     });
   },
   updateSearchOpts ({ commit, state }, value){
-    // commit('setSearchOpts', state.search_opts);
-
     httpApi.updateDocument('users', state.username, {
-      "search_opts": state.search_opts
+      "search_opts": state.searchOpts
+    }).then((res) => {
+      commit('setSearchOpts', state.searchOpts);
     });
   },
   appendSearchKeyword ({ commit, state }, value){
+    if (!value || /^\s*$/.test(value)) {
+      return 0
+    }
+
     let tmp = [];
     try {
-      tmp = state.recent_search_keywords.filter(function(x) { return x !== value})
+      tmp = state.recentSearchKeywords.filter(
+        function(x) { return x !== value }
+      )
     } catch (error) {
-      console.log(error);
       tmp = [];
     }
     tmp.push(value);

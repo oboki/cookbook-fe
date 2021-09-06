@@ -6,7 +6,6 @@ import NoticeView from '@/views/Notice'
 import SearchView from '@/views/Search'
 import DetailView from '@/views/Detail'
 import UserView from '@/views/User'
-import TestView from '@/views/Test'
 
 Vue.use(VueRouter)
 
@@ -36,11 +35,6 @@ const routes = [
         component: UserView,
       },
     ]
-  },
-  {
-    path: '/test',
-    name: 'Test',
-    component: TestView
   },
 ]
 

@@ -1,36 +1,37 @@
 <template>
-  <v-container>
+  <v-container class="pl-16 pr-16 pt-12">
     <v-row>
       <v-col
         v-if="$route.query.more"
-        cols="9"
+        cols="12"
+        sm="12"
+        md="9"
       >
         <v-row
           justify="center"
           align="center"
         >
-          <v-col cols="3">
-            <div
-              class="text-h4 mt-7 ml-3"
-              style="text-align: right"
-            >
+          <v-col
+            cols="3"
+          >
+            <div class="text-h4 text-right">
               검색결과
             </div>
           </v-col>
           <v-col cols="9">
             <div
               v-if="total.value"
-              class="text-h7 mt-7 ml-3"
+              class="text-h7 ml-3"
             >
-              {{ $route.query.page*search_opts.pagesize_for_single+1 }}
+              {{ $route.query.page*searchOpts.pagesize.single+1 }}
               -
-              {{ (Number($route.query.page)+1)*search_opts.pagesize_for_single > total.value ? total.value : (Number($route.query.page)+1)*search_opts.pagesize_for_single }}
+              {{ (Number($route.query.page)+1)*searchOpts.pagesize.single > total.value ? total.value : (Number($route.query.page)+1)*searchOpts.pagesize.single }}
               /
               {{ total.value }}
             </div>
             <div
               v-else
-              class="text-h7 mt-7 ml-3"
+              class="text-h7 ml-3"
             >
               검색 결과가 없습니다.
             </div>
@@ -40,11 +41,16 @@
 
         <v-row v-if="searchResult.tables.length || searchResult.columns.length || searchResult.codes.length || searchResult.comments.length">
           <v-col
-            cols="3"
+            cols="12"
+            sm="3"
           >
             <div
               class="text-h5 mt-2"
-              style="text-align: right"
+              :class="{
+                'mb-n5': $vuetify.breakpoint.smAndDown,
+                'text-left': $vuetify.breakpoint.xs,
+                'text-right': $vuetify.breakpoint.smAndUp
+              }"
             >
               <p v-if="$route.query.more==='tables'">
                 테이블
@@ -68,7 +74,10 @@
               "
             />
           </v-col>
-          <v-col cols="9">
+          <v-col
+            cols="12"
+            sm="9"
+          >
             <table-search-list
               v-if="$route.query.more==='tables'"
               :items="searchResult.tables"
@@ -85,10 +94,12 @@
               v-if="$route.query.more==='comments'"
               :items="searchResult.comments"
             />
+          </v-col>
+          <v-col cols="12">
             <div class="text-center pt-16 pb-10">
               <v-pagination
                 v-model="currentPage"
-                :length="Math.floor(Number(total.value) / search_opts.pagesize_for_single) + 1"
+                :length="Math.floor(Number(total.value) / searchOpts.pagesize.single) + 1"
                 :total-visible="10"
                 @input="handlePageChange"
               />
@@ -97,14 +108,10 @@
         </v-row>
       </v-col>
       <v-col
-        v-else-if="$route.query.more==='columns'"
-        cols="9"
-      >
-        columns
-      </v-col>
-      <v-col
         v-else
-        cols="9"
+        cols="12"
+        sm="12"
+        md="9"
       >
         <v-row
           justify="center"
@@ -112,7 +119,7 @@
         >
           <v-col cols="3">
             <div
-              class="text-h4 mt-7 ml-3"
+              class="text-h4"
               style="text-align: right"
             >
               검색결과
@@ -121,7 +128,7 @@
           <v-col cols="9">
             <div
               v-if="searchResult.tables.length || searchResult.columns.length || searchResult.codes.length || searchResult.comments.length"
-              class="text-h7 mt-7 ml-3"
+              class="text-h7 ml-3"
             >
               더보기 버튼을 눌러 항목별 검색결과를 더 확인하세요.
             </div>
@@ -137,18 +144,26 @@
 
         <v-row v-if="searchResult.tables.length">
           <v-col
-            cols="3"
+            cols="12"
+            sm="3"
           >
             <div
               class="text-h5 mt-2"
-              style="text-align: right"
+              :class="{
+                'text-left': $vuetify.breakpoint.xs,
+                'text-right': $vuetify.breakpoint.smAndUp
+              }"
             >
               테이블
             </div>
             <div
               class="mb-7"
+              :class="{
+                'text-left': $vuetify.breakpoint.xs,
+                'text-right': $vuetify.breakpoint.smAndUp,
+                'mb-n3': $vuetify.breakpoint.xs,
+              }"
               style="
-                text-align: right;
                 color: rgb(41, 90, 221);
                 text-decoration: underline;
               "
@@ -162,24 +177,37 @@
               </router-link>
             </div>
           </v-col>
-          <v-col cols="9">
+          <v-col
+            cols="12"
+            sm="9"
+          >
             <table-search-list :items="searchResult.tables" />
           </v-col>
           <v-spacer />
         </v-row>
 
         <v-row v-if="searchResult.columns.length">
-          <v-col cols="3">
+          <v-col
+            cols="12"
+            sm="3"
+          >
             <div
               class="text-h5 mt-2"
-              style="text-align: right"
+              :class="{
+                'text-left': $vuetify.breakpoint.xs,
+                'text-right': $vuetify.breakpoint.smAndUp
+              }"
             >
               컬럼
             </div>
             <div
               class="mb-7"
+              :class="{
+                'text-left': $vuetify.breakpoint.xs,
+                'text-right': $vuetify.breakpoint.smAndUp,
+                'mb-n3': $vuetify.breakpoint.xs,
+              }"
               style="
-                text-align: right;
                 color: rgb(41, 90, 221);
                 text-decoration: underline;
               "
@@ -193,24 +221,37 @@
               </router-link>
             </div>
           </v-col>
-          <v-col cols="9">
+          <v-col
+            cols="12"
+            sm="9"
+          >
             <column-search-list :items="searchResult.columns" />
           </v-col>
           <v-spacer />
         </v-row>
 
         <v-row v-if="searchResult.codes.length">
-          <v-col cols="3">
+          <v-col
+            cols="12"
+            sm="3"
+          >
             <div
               class="text-h5 mt-2"
-              style="text-align: right"
+              :class="{
+                'text-left': $vuetify.breakpoint.xs,
+                'text-right': $vuetify.breakpoint.smAndUp
+              }"
             >
               코드
             </div>
             <div
               class="mb-7"
+              :class="{
+                'text-left': $vuetify.breakpoint.xs,
+                'text-right': $vuetify.breakpoint.smAndUp,
+                'mb-n3': $vuetify.breakpoint.xs,
+              }"
               style="
-                text-align: right;
                 color: rgb(41, 90, 221);
                 text-decoration: underline;
               "
@@ -224,24 +265,37 @@
               </router-link>
             </div>
           </v-col>
-          <v-col cols="9">
+          <v-col
+            cols="12"
+            sm="9"
+          >
             <code-search-list :items="searchResult.codes" />
           </v-col>
           <v-spacer />
         </v-row>
 
         <v-row v-if="searchResult.comments.length">
-          <v-col cols="3">
+          <v-col
+            cols="12"
+            sm="3"
+          >
             <div
               class="text-h5 mt-2"
-              style="text-align: right"
+              :class="{
+                'text-left': $vuetify.breakpoint.xs,
+                'text-right': $vuetify.breakpoint.smAndUp
+              }"
             >
               댓글
             </div>
             <div
               class="mb-7"
+              :class="{
+                'text-left': $vuetify.breakpoint.xs,
+                'text-right': $vuetify.breakpoint.smAndUp,
+                'mb-n3': $vuetify.breakpoint.xs,
+              }"
               style="
-                text-align: right;
                 color: rgb(41, 90, 221);
                 text-decoration: underline;
               "
@@ -255,15 +309,24 @@
               </router-link>
             </div>
           </v-col>
-          <v-col cols="9">
+          <v-col
+            cols="12"
+            sm="9"
+          >
             <comment-search-list :items="searchResult.comments" />
           </v-col>
           <v-spacer />
         </v-row>
         <v-row class="mt-16" />
       </v-col>
-      <v-col cols="3">
-        <sidebar />
+      <v-col
+        cols="12"
+        sm="12"
+        md="3"
+      >
+        <sidebar
+          class="mb-12"
+        />
       </v-col>
     </v-row>
   </v-container>
@@ -309,7 +372,7 @@ export default {
   },
   computed: {
     ...userHelper.mapState({
-      search_opts : state => state.search_opts,
+      searchOpts : state => state.searchOpts,
     }),
   },
   watch: {
@@ -321,6 +384,9 @@ export default {
       this.fetchSearchResult();
     },
     '$route.query.page'() {
+      this.fetchSearchResult();
+    },
+    '$route.query.retry'() {
       this.fetchSearchResult();
     }
   },
@@ -338,11 +404,12 @@ export default {
         httpApi.search(
           this.$route.query.more,
           this.$route.query.s,
-          this.search_opts.pagesize_for_single,
+          this.searchOpts.pagesize.single,
           this.$route.query.page,
+          [],
+          this.searchOpts.advanced.enabled,
+          this.searchOpts.advanced.items,
         ).then((res) => {
-          console.log(this.$route.query.more);
-          console.log("search result fetch success.");
           this.$set(
             this.searchResult,
             this.$route.query.more, []
@@ -358,8 +425,10 @@ export default {
           httpApi.search(
             target,
             this.$route.query.s,
-            this.search_opts.pagesize_for_all,
-            ).then((res) => {
+            this.searchOpts.pagesize.all, 0, [],
+            this.searchOpts.advanced.enabled,
+            this.searchOpts.advanced.items,
+          ).then((res) => {
             this.$set(this.searchResult, target, []);
             this.$set(this.searchResult, target, res.data.hits);
           });

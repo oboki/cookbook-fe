@@ -5,7 +5,7 @@
       :key="item._id"
     >
       <v-col
-        cols="9"
+        cols="12"
         class="ml-2"
       >
         <router-link
