@@ -29,7 +29,7 @@ const actions = {
   loadUserInfo ({commit}, /**/){
     httpApi.get('/whoami').then((res) => {
       const username = res.data.username;
-      httpApi.getDocument('users', username).then((res) => {
+      httpApi.getDocument('users', username.toLowerCase()).then((res) => {
         commit('setUserInfo', res.data);
       }).catch(error=>{
         window.location.href = '/login?next=/cookbook';

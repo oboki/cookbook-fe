@@ -43,6 +43,9 @@
 </template>
 <script>
 import http from '@/api/http';
+import { createNamespacedHelpers } from 'vuex'
+
+const userHelper = createNamespacedHelpers('user')
 
 export default {
   name: 'CodeList',
@@ -69,13 +72,19 @@ export default {
       newCode: {name: null, description: null},
     }
   },
+  computed: {
+    ...userHelper.mapState({
+      username: state => state.username
+    }),
+  },
   methods: {
     addCode(){
       const newCode = {
         "parent_id": this.tableId,
         "column_name": this.columnName,
         "code": this.newCode.name,
-        "description": this.newCode.description
+        "description": this.newCode.description,
+        "author": this.username
       }
 
       http.post('/codes/add', {

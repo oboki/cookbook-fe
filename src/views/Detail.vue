@@ -305,7 +305,7 @@
                   :colspan="headers.length"
                   class="elevation-0"
                 >
-                  <v-row class="pt-10 ml-2 mr-4">
+                  <v-row class="pt-10 ml-2 mr-4 cookbook-expanded-column-detail">
                     <v-col
                       cols="11"
                     >
@@ -385,7 +385,7 @@
                       </v-btn>
                     </v-col>
                   </v-row>
-                  <v-row class="ml-2 mr-4">
+                  <v-row class="ml-2 mr-4 cookbook-expanded-column-detail">
                     <v-col
                       cols="12"
                       sm="12"
@@ -414,7 +414,7 @@
                       />
                     </v-col>
                   </v-row>
-                  <v-row class="mt-n7 ml-2 mr-4">
+                  <v-row class="mt-n7 ml-2 mr-4 cookbook-expanded-column-detail">
                     <v-col
                       cols="12"
                       sm="12"
@@ -440,7 +440,7 @@
                       />
                     </v-col>
                   </v-row>
-                  <v-row class="mt-n7 ml-2 mr-4">
+                  <v-row class="mt-n7 ml-2 mr-4 cookbook-expanded-column-detail">
                     <v-col
                       cols="12"
                       sm="12"
@@ -466,7 +466,7 @@
                       />
                     </v-col>
                   </v-row>
-                  <v-row class="mt-n7 ml-2 mr-4">
+                  <v-row class="mt-n7 ml-2 mr-4 cookbook-expanded-column-detail">
                     <v-col
                       cols="12"
                       sm="12"
@@ -492,7 +492,7 @@
                       />
                     </v-col>
                   </v-row>
-                  <v-row class="mt-n7 ml-2 mr-4">
+                  <v-row class="mt-n7 ml-2 mr-4 cookbook-expanded-column-detail">
                     <v-col
                       cols="12"
                       sm="12"
@@ -518,7 +518,7 @@
                       />
                     </v-col>
                   </v-row>
-                  <v-row class="mt-n7 ml-2 mr-4">
+                  <v-row class="mt-n7 ml-2 mr-4 cookbook-expanded-column-detail">
                     <v-col
                       cols="12"
                       sm="12"
@@ -544,7 +544,7 @@
                       />
                     </v-col>
                   </v-row>
-                  <v-row class="mt-n7 ml-2 mr-4">
+                  <v-row class="mt-n7 ml-2 mr-4 cookbook-expanded-column-detail">
                     <v-col
                       cols="12"
                       sm="12"
@@ -593,7 +593,7 @@
                       </v-simple-table>
                     </v-col>
                   </v-row>
-                  <v-row class="mt-n7 ml-2 mr-4">
+                  <v-row class="mt-n7 ml-2 mr-4 cookbook-expanded-column-detail">
                     <v-col
                       cols="12"
                       sm="12"
@@ -676,10 +676,15 @@ export default {
       singleExpand : false,
       tableHeaders: [
         {
+          text: "",
+          value: "data-table-expand"
+        },
+        {
           text: "#",
           align: "start",
           sortable: false,
           value: "position",
+          width: 60
         },
         {
           text: "컬럼명",
@@ -697,10 +702,19 @@ export default {
           width: 100
         },
         {
+          text: "개인정보보호여부",
+          value: "is_protected",
+          width: 140
+        },
+        {
+          text: "암호화여부",
+          value: "is_encrypted",
+          width: 100
+        },
+        {
           text: "설명",
           value: "description",
         },
-        { text: "", value: "data-table-expand" },
       ],
       detail: {
         'table': {},
@@ -713,7 +727,8 @@ export default {
   },
   computed: {
     ...userHelper.mapState({
-      bookmark: state => state.bookmark
+      bookmark: state => state.bookmark,
+      username: state => state.username
     }),
   },
   watch: {
@@ -827,13 +842,13 @@ export default {
       }
     },
     updateDocument(index, id){
-      let doc = {}
+      let doc = { "author": this.username }
       if (index === 'tables'){
-        doc = this.detail.table;
+        doc = Object.assign(doc, this.detail.table);
       } else if (index === 'columns'){
         this.detail.columns.forEach(item => {
           if(item.id === id) {
-            doc = item
+            doc = Object.assign(doc, item);
           }
         })
       }
@@ -865,9 +880,53 @@ export default {
 }
 
 .v-data-table > .v-data-table__wrapper > table > tbody > tr > td {
-  vertical-align: top;
-  padding-top: 13px !important;
-  padding-bottom: 10px !important;
+  white-space: nowrap;
+  min-width: 130px;
+}
+
+.v-data-table > .v-data-table__wrapper > table > tbody > tr > td:nth-child(1) ,
+.v-data-table > .v-data-table__wrapper > table > tbody > tr > td:nth-child(2) {
+  min-width: inherit;
+}
+
+@media (max-width: 599px) {
+  .cookbook-expanded-column-detail {
+    max-width: 300px;
+  }
+
+  .v-data-table__mobile-row {
+    max-width: 300px;
+  }
+
+  .v-appplication--is-ltr .v-data-table__mobile-row__cell {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (min-width: 600px) {
+  .cookbook-expanded-column-detail {
+    max-width: 300px;
+  }
+}
+
+@media (min-width: 960px) {
+  .cookbook-expanded-column-detail {
+    max-width: 440px;
+  }
+}
+
+@media (min-width: 1264px) {
+  .cookbook-expanded-column-detail {
+    max-width: 670px;
+  }
+}
+
+@media (min-width: 1904px) {
+  .cookbook-expanded-column-detail {
+    max-width: 1134px;
+  }
 }
 
 .cookbook-display-none {

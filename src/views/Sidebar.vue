@@ -32,6 +32,7 @@
             dense
             class="mt-3"
             @change="updateAdvancedSearchOpts"
+            @keyup.enter="searchAfterUpdateSearchOpts"
           />
         </div>
         <div
@@ -45,6 +46,7 @@
             dense
             class="mt-3"
             @change="updateAdvancedSearchOpts"
+            @keyup.enter="searchAfterUpdateSearchOpts"
           />
         </div>
         <div
@@ -59,6 +61,7 @@
             dense
             class="mt-3"
             @change="updateAdvancedSearchOpts"
+            @keyup.enter="searchAfterUpdateSearchOpts"
           />
           <v-text-field
             v-model="advancedSearch.wildcard.entityName"
@@ -68,6 +71,7 @@
             dense
             class="mt-n3"
             @change="updateAdvancedSearchOpts"
+            @keyup.enter="searchAfterUpdateSearchOpts"
           />
           <v-text-field
             v-model="advancedSearch.wildcard.columnName"
@@ -77,6 +81,7 @@
             :disabled="!(advancedSearchEnabled && !advancedSearch.wildcard.tableName && !advancedSearch.wildcard.entityName && !advancedSearch.wildcard.attributeName)"
             class="mt-n3"
             @change="updateAdvancedSearchOpts"
+            @keyup.enter="searchAfterUpdateSearchOpts"
           />
           <v-text-field
             v-model="advancedSearch.wildcard.attributeName"
@@ -86,6 +91,7 @@
             :disabled="!(advancedSearchEnabled && !advancedSearch.wildcard.tableName && !advancedSearch.wildcard.entityName && !advancedSearch.wildcard.columnName)"
             class="mt-n3"
             @change="updateAdvancedSearchOpts"
+            @keyup.enter="searchAfterUpdateSearchOpts"
           />
         </div>
       </v-card>
@@ -232,6 +238,10 @@ export default {
       })
 
       this.updateSearchOpts();
+    },
+    searchAfterUpdateSearchOpts() {
+      this.updateSearchOpts();
+      this.search(this.$route.query.s);
     },
     search(val) {
       if (this.search_opt === "all") {

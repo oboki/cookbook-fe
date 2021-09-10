@@ -163,8 +163,7 @@
         dense
       >
         <v-list-item-group>
-          <!-- v-model="group" -->
-          <v-list-item>
+          <v-list-item @click="locationTo('/home')">
             <v-list-item-icon>
               <v-icon>mdi-airplane</v-icon>
             </v-list-item-icon>
@@ -286,6 +285,9 @@ export default {
         this.loading = false;
       }, 500);
     },
+    locationTo(val) {
+      window.location.href = val;
+    }
   }
 }
 </script>

@@ -29,6 +29,7 @@
           <v-col cols="1">
             <v-btn
               icon
+              :disabled="username !== item.author"
               @click="deleteComment(item.id)"
             >
               <v-icon>
@@ -44,6 +45,7 @@
         >
           <v-col
             cols="2"
+            class="text-truncate"
             style="text-align: right"
           >
             {{ username }}

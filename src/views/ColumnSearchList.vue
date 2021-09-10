@@ -30,7 +30,7 @@
           <div
             class="mb-n1"
           >
-            {{ item._source.data_type }} | {{ item._source.data_length }} | 암호화 X | 개인정보항목 X
+            {{ item._source.data_type }} | {{ item._source.data_length }} | {{ item._source.is_encrypted }} | {{ item._source.is_protected }}
           </div>
           <div
             class="mb-n2"
