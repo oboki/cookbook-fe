@@ -28,12 +28,17 @@ const mutations = {
 const actions = {
   loadUserInfo ({commit}, /**/){
     httpApi.get('/whoami').then((res) => {
+      if (!('username' in res.data)) {
+        window.location.href = '/login?next=/cookbook';
+      }
       const username = res.data.username;
       httpApi.getDocument('users', username.toLowerCase()).then((res) => {
         commit('setUserInfo', res.data);
       }).catch(error=>{
         window.location.href = '/login?next=/cookbook';
       })
+    }).catch(error=>{
+        window.location.href = '/login?next=/cookbook';
     });
   },
   updateSearchOpts ({ commit, state }, value){

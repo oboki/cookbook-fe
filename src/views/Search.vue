@@ -401,16 +401,19 @@ export default {
       this.fetchSearchResult();
     }
   },
-  beforeMount() {
-    this.appendSearchKeyword(this.$route.query.s);
-    this.fetchSearchResult();
-  },
   created() {
     this.appendSearchKeyword(this.$route.query.s);
     this.fetchSearchResult();
   },
   methods: {
     fetchSearchResult() {
+      this. searchResult = {
+        'tables': [],
+        'columns': [],
+        'codes': [],
+        'comments': [],
+      };
+
       if (this.$route.query.more){
         httpApi.search(
           this.$route.query.more,

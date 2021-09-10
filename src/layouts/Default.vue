@@ -38,7 +38,6 @@
             :loading="loading"
             :items="items"
             :search-input.sync="autocomplete"
-            cache-items
             class="mx-4 mt-1 fixed-tabs-bar"
             flat
             dense
@@ -47,6 +46,7 @@
             label="검색어를 입력하세요."
             solo-inverted
             @change="search"
+            @keyup.enter="search"
           />
           <v-btn
             icon
@@ -236,6 +236,7 @@ export default {
     ]),
     search() {
       const s = this.select;
+      this.items = [];
 
       if (this.searchOpts.target === "all") {
         this.$router.push(
