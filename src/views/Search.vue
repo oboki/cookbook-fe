@@ -13,8 +13,14 @@
         >
           <v-col
             cols="3"
+            :class="{
+              'd-none': $vuetify.breakpoint.xs
+            }"
           >
-            <div class="text-h4 text-right">
+            <div
+              class="text-right text-h4"
+              style="white-space: nowrap;"
+            >
               검색결과
             </div>
           </v-col>
@@ -117,10 +123,15 @@
           justify="center"
           align="center"
         >
-          <v-col cols="3">
+          <v-col
+            cols="3"
+            :class="{
+              'd-none': $vuetify.breakpoint.xs
+            }"
+          >
             <div
-              class="text-h4"
-              style="text-align: right"
+              class="text-right text-h4"
+              style="white-space: nowrap;"
             >
               검색결과
             </div>

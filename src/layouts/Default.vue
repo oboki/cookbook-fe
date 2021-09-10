@@ -10,6 +10,9 @@
         <v-row>
           <v-btn
             icon
+            :class="{
+              'd-none': $vuetify.breakpoint.xs
+            }"
             @click="$router.go(-1)"
           >
             <v-icon>
@@ -18,6 +21,9 @@
           </v-btn>
           <v-app-bar-nav-icon
             class="ml-n4"
+            :class="{
+              'd-none': $vuetify.breakpoint.xs
+            }"
             @click="drawer = true"
           />
           <v-toolbar-title
@@ -44,6 +50,9 @@
           />
           <v-btn
             icon
+            :class="{
+              'd-none': $vuetify.breakpoint.smAndDown
+            }"
             @click="search"
           >
             <v-icon>mdi-magnify</v-icon>
