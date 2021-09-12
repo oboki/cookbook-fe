@@ -297,10 +297,9 @@
               show-expand
             >
               <template
-                :id="item.id"
                 v-slot:expanded-item="{ headers, item }"
               >
-                <div :id="item.id" />
+                <div />
                 <td
                   :colspan="headers.length"
                   class="elevation-0"
@@ -311,6 +310,7 @@
                     >
                       <v-row>
                         <div
+                          :id="item.id"
                           class="text-h5 text-left"
                           :class="{
                             'pl-4': $vuetify.breakpoint.mdAndUp,
@@ -323,6 +323,7 @@
                       </v-row>
                       <v-row>
                         <v-text-field
+                          :id="item.column_name"
                           v-model="item.attribute_name"
                           :disabled="!isEditable(item.id)"
                           class="text-h6 text-left mt-n4"
@@ -770,13 +771,22 @@ export default {
         const tmp = [];
         res.data.hits.forEach(item => {
           item._source['id'] = item._id;
-          if ('#'+item._id === this.$route.hash){
+          if (item._id === this.$route.hash.substring(1) || item._source.column_name === this.$route.hash.substring(1)){
             this.expanded.push(item._source)
             this.fetchCodeInfo(item._source.column_name);
           }
           tmp.push(item._source);
         });
-        this.$set(this.detail, 'columns', tmp)
+        this.$set(this.detail, 'columns', tmp);
+        if (this.$route.hash) {
+          setTimeout(()=>{
+            const el = document.getElementById(this.$route.hash.substring(1));
+            el.scrollIntoView({
+              behavior: "smooth",
+              block: "center"
+            });
+          }, 500);
+        }
       });
 
       httpApi.search(
