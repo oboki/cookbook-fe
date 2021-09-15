@@ -19,7 +19,12 @@ export function search(
   } else {
     return http.get(`${URL}`)
   }
+}
 
+export function list(index) {
+  return http.get([
+    "/", index
+  ].join(""))
 }
 
 export function get(val) {

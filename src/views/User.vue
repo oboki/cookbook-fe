@@ -29,12 +29,13 @@
           :to="{path: /detail/+item.id}"
           tag="div"
           style="cursor:pointer;"
+          class="link-detail"
         >
           <p class="mt-n2 text-h6 text-truncate">
             {{ item.db_name }}.{{ item.table_name }}
           </p>
           <p
-            class="mt-n6"
+            class="mt-n6 text-truncate"
             style="font-style: italic;"
           >
             {{ item.entity_name }}
@@ -60,6 +61,7 @@
           }"
           tag="div"
           style="cursor:pointer;"
+          class="link-detail"
         >
           <p
             class="mt-n2 text-h6"
@@ -117,7 +119,7 @@ export default {
   methods: {
     searchCommentbyAuthor() {
       httpApi.search(
-        'comments', this.username, 10,
+        'comments', this.username.toLowerCase(), 10,
         this.currentPageForComment, ['by-author']
       ).then((res) => {
         this.comments = this.comments.concat(res.data.hits);
@@ -140,5 +142,9 @@ export default {
 
 .cookbook-display-none {
   display:none
+}
+
+.link-detail:hover {
+    color: #929292;
 }
 </style>

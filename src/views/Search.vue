@@ -433,6 +433,8 @@ export default {
             this.$route.query.more, res.data.hits
           );
           this.total = res.data.total;
+        }).catch(error => {
+          window.location.href = '/login?next=/cookbook';
         });
       } else {
         this.searchTargets.forEach(target => {
@@ -445,6 +447,8 @@ export default {
           ).then((res) => {
             this.$set(this.searchResult, target, []);
             this.$set(this.searchResult, target, res.data.hits);
+          }).catch(error => {
+            window.location.href = '/login?next=/cookbook';
           });
         })
       }

@@ -42,7 +42,7 @@ const actions = {
     });
   },
   updateSearchOpts ({ commit, state }, value){
-    httpApi.updateDocument('users', state.username, {
+    httpApi.updateDocument('users', state.username.toLowerCase(), {
       "search_opts": state.searchOpts
     }).then((res) => {
       commit('setSearchOpts', state.searchOpts);
@@ -65,7 +65,7 @@ const actions = {
     tmp = tmp.reverse().slice(0, 10).reverse();
 
     commit('setSearchKeyword', tmp);
-    httpApi.updateDocument('users', state.username, {
+    httpApi.updateDocument('users', state.username.toLowerCase(), {
       "recent_search_keywords": tmp
     });
   },
@@ -80,7 +80,7 @@ const actions = {
     tmp = tmp.reverse().slice(0,20);
 
     commit('setBookmark', tmp);
-    httpApi.updateDocument('users', state.username, {
+    httpApi.updateDocument('users', state.username.toLowerCase(), {
       "bookmark": tmp
     });
   },
