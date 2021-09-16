@@ -92,6 +92,9 @@ const actions = {
       }
     }
     commit('setBookmark', tmp);
+    httpApi.updateDocument('users', state.username.toLowerCase(), {
+      "bookmark": tmp
+    });
   }
 }
 
