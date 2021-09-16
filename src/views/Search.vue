@@ -105,7 +105,7 @@
             <div class="text-center pt-16 pb-10">
               <v-pagination
                 v-model="currentPage"
-                :length="Math.floor(Number(total.value) / searchOpts.pagesize.single) + 1"
+                :length="pageLength"
                 :total-visible="10"
                 @input="handlePageChange"
               />
@@ -385,6 +385,11 @@ export default {
     ...userHelper.mapState({
       searchOpts : state => state.searchOpts,
     }),
+    pageLength: function() {
+      const q = Math.floor(Number(this.total.value) / this.searchOpts.pagesize.single);
+      const r = Math.floor(Number(this.total.value) % this.searchOpts.pagesize.single);
+      return r ? q + 1 : q;
+    }
   },
   watch: {
     '$route.query.s'() {
@@ -407,7 +412,8 @@ export default {
   },
   methods: {
     fetchSearchResult() {
-      this. searchResult = {
+      this.currentPage = this.$route.query.page ? Number(this.$route.query.page) + 1 : 1;
+      this.searchResult = {
         'tables': [],
         'columns': [],
         'codes': [],

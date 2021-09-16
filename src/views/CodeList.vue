@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-simple-table>
+    <v-simple-table class="pb-4">
       <template>
         <thead>
           <tr>
@@ -23,8 +23,18 @@
             <td />
           </tr>
           <tr>
-            <td><v-text-field v-model="newCode.name" /></td>
-            <td><v-text-field v-model="newCode.description" /></td>
+            <td>
+              <v-text-field
+                v-model="newCode.name"
+                class="v-input--is-focused"
+              />
+            </td>
+            <td>
+              <v-text-field
+                v-model="newCode.description"
+                class="v-input--is-focused"
+              />
+            </td>
             <td>
               <v-btn
                 icon

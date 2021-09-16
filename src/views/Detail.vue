@@ -1,115 +1,116 @@
 <template>
   <v-container class="pa-16">
     <v-row class="ml-16 mr-16">
-      <v-col cols="11">
-        <v-row>
-          <div
-            class="text-h4 text-left"
-            :class="{
-              'pl-7': $vuetify.breakpoint.mdAndUp,
-              'pl-16': $vuetify.breakpoint.lgAndUp,
-              'ml-16': $vuetify.breakpoint.xl,
-            }"
+      <v-col>
+        <v-card
+          class="d-flex justify-space-between"
+          flat
+        >
+          <v-card
+            flat
+            width="90%"
           >
-            {{ detail.table.db_name }}.{{ detail.table.table_name }}
+            <div
+              class="text-h4 text-left"
+              :class="{
+                'pl-7': $vuetify.breakpoint.mdAndUp,
+                'pl-16': $vuetify.breakpoint.lgAndUp,
+                'ml-16': $vuetify.breakpoint.xl,
+              }"
+            >
+              {{ title }}
+              <v-btn
+                icon
+                :class="{
+                  'cookbook-display-none': !isBookmarked(detail.table.id),
+                  'cookbook-display-block': isBookmarked(detail.table.id),
+                  'mb-2': true,
+                  'ml-1': true,
+                }"
+                color="yellow"
+                @click="toggleBookmarked()"
+              >
+                <v-icon
+                  size="45"
+                >
+                  mdi-star
+                </v-icon>
+              </v-btn>
+              <v-btn
+                icon
+                :class="{
+                  'cookbook-display-none': isBookmarked(detail.table.id),
+                  'cookbook-display-block': !isBookmarked(detail.table.id),
+                  'mb-2': true,
+                  'ml-1': true,
+                }"
+                @click="toggleBookmarked()"
+              >
+                <v-icon
+                  size="45"
+                >
+                  mdi-star-outline
+                </v-icon>
+              </v-btn>
+            </div>
+            <v-text-field
+              v-model="detail.table.entity_name"
+              :disabled="!isEditable(this.$route.params.id)"
+              class="mt-n6 text-h5"
+              :class="{
+                'pl-7': $vuetify.breakpoint.mdAndUp,
+                'pl-16': $vuetify.breakpoint.lgAndUp,
+                'ml-16': $vuetify.breakpoint.xl,
+                'v-input--is-focused': isEditable(this.$route.params.id)
+              }"
+              style="font-style: italic; padding-right: 2rem;"
+            />
+          </v-card>
+          <v-card flat>
             <v-btn
               icon
               :class="{
-                'cookbook-display-none': !isBookmarked(detail.table.id),
-                'cookbook-display-block': isBookmarked(detail.table.id),
-                'mb-2': true,
-                'ml-1': true,
+                'cookbook-display-none': isEditable(detail.table.id),
+                'cookbook-display-block': !isEditable(detail.table.id)
               }"
-              color="yellow"
-              @click="toggleBookmarked()"
+              @click="editable.push(detail.table.id)"
             >
               <v-icon
-                size="45"
+                size="30"
               >
-                mdi-star
+                mdi-square-edit-outline
               </v-icon>
             </v-btn>
             <v-btn
               icon
               :class="{
-                'cookbook-display-none': isBookmarked(detail.table.id),
-                'cookbook-display-block': !isBookmarked(detail.table.id),
-                'mb-2': true,
-                'ml-1': true,
+                'cookbook-display-block': isEditable(detail.table.id),
+                'cookbook-display-none': !isEditable(detail.table.id)
               }"
-              @click="toggleBookmarked()"
+              @click="updateDocument('tables', detail.table.id)"
             >
               <v-icon
-                size="45"
+                size="30"
               >
-                mdi-star-outline
+                mdi-check
               </v-icon>
             </v-btn>
-          </div>
-        </v-row>
-        <v-row>
-          <v-text-field
-            v-model="detail.table.entity_name"
-            :disabled="!isEditable(this.$route.params.id)"
-            class="mt-n6 text-h5"
-            :class="{
-              'pl-7': $vuetify.breakpoint.mdAndUp,
-              'pl-16': $vuetify.breakpoint.lgAndUp,
-              'ml-16': $vuetify.breakpoint.xl,
-            }"
-            style="font-style: italic;"
-          />
-        </v-row>
-      </v-col>
-      <v-col
-        cols="1"
-        flat
-        height="100%"
-        class="d-flex flex-row-reverse"
-        align-self="start"
-      >
-        <v-btn
-          icon
-          :class="{
-            'cookbook-display-none': isEditable(detail.table.id),
-            'cookbook-display-block': !isEditable(detail.table.id)
-          }"
-          @click="editable.push(detail.table.id)"
-        >
-          <v-icon
-            size="30"
-          >
-            mdi-square-edit-outline
-          </v-icon>
-        </v-btn>
-        <v-btn
-          icon
-          :class="{
-            'cookbook-display-block': isEditable(detail.table.id),
-            'cookbook-display-none': !isEditable(detail.table.id)
-          }"
-          @click="popEditable(detail.table.id)"
-        >
-          <v-icon
-            size="30"
-          >
-            mdi-close
-          </v-icon>
-        </v-btn>
-        <v-btn
-          icon
-          :class="{
-            'cookbook-display-block': isEditable(detail.table.id),
-            'cookbook-display-none': !isEditable(detail.table.id)
-          }"
-          @click="updateDocument('tables', detail.table.id)"
-        >
-          <v-icon
-            size="30"
-          >
-            mdi-check
-          </v-icon>
-        </v-btn>
+            <v-btn
+              icon
+              :class="{
+                'cookbook-display-block': isEditable(detail.table.id),
+                'cookbook-display-none': !isEditable(detail.table.id)
+              }"
+              @click="popEditable(detail.table.id)"
+            >
+              <v-icon
+                size="30"
+              >
+                mdi-close
+              </v-icon>
+            </v-btn>
+          </v-card>
+        </v-card>
       </v-col>
     </v-row>
     <v-row class="ml-16 mr-16">
@@ -167,6 +168,11 @@
             <v-text-field
               v-model="detail.table.storage_type"
               :disabled="!isEditable(this.$route.params.id)"
+              :outlined="isEditable(this.$route.params.id)"
+              :dense="isEditable(this.$route.params.id)"
+              :class="{
+                'cookbook-editable-input': isEditable(this.$route.params.id)
+              }"
               class="text-left mt-n4"
             />
           </v-col>
@@ -186,10 +192,19 @@
           >
             파티션 키
           </v-col>
-          <v-col cols="10">
+          <v-col
+            cols="12"
+            sm="12"
+            md="10"
+          >
             <v-text-field
               v-model="detail.table.partition_key"
               :disabled="!isEditable(this.$route.params.id)"
+              :outlined="isEditable(this.$route.params.id)"
+              :dense="isEditable(this.$route.params.id)"
+              :class="{
+                'cookbook-editable-input': isEditable(this.$route.params.id)
+              }"
               class="text-left mt-n4"
             />
           </v-col>
@@ -209,10 +224,19 @@
           >
             담당자
           </v-col>
-          <v-col cols="10">
+          <v-col
+            cols="12"
+            sm="12"
+            md="10"
+          >
             <v-text-field
               v-model="detail.table.contact"
               :disabled="!isEditable(this.$route.params.id)"
+              :outlined="isEditable(this.$route.params.id)"
+              :dense="isEditable(this.$route.params.id)"
+              :class="{
+                'cookbook-editable-input': isEditable(this.$route.params.id)
+              }"
               class="text-left mt-n4"
             />
           </v-col>
@@ -237,12 +261,12 @@
             sm="12"
             md="10"
           >
-            <v-simple-table>
+            <v-simple-table class="pb-4">
               <template v-slot:default>
                 <thead>
                   <tr>
                     <th class="text-left">
-                      part_key
+                      partition
                     </th>
                     <th class="text-left">
                       # Rows
@@ -295,6 +319,7 @@
               :items-per-page="-1"
               item-key="position"
               show-expand
+              class="pb-4"
             >
               <template
                 v-slot:expanded-item="{ headers, item }"
@@ -305,85 +330,85 @@
                   class="elevation-0"
                 >
                   <v-row class="pt-10 ml-2 mr-4 cookbook-expanded-column-detail">
-                    <v-col
-                      cols="11"
-                    >
-                      <v-row>
-                        <div
-                          :id="item.id"
-                          class="text-h5 text-left"
-                          :class="{
-                            'pl-4': $vuetify.breakpoint.mdAndUp,
-                            'pl-7': $vuetify.breakpoint.lgAndUp,
-                            'ml-7': $vuetify.breakpoint.xl,
-                          }"
-                        >
-                          {{ item.column_name }}
-                        </div>
-                      </v-row>
-                      <v-row>
-                        <v-text-field
-                          :id="item.column_name"
-                          v-model="item.attribute_name"
-                          :disabled="!isEditable(item.id)"
-                          class="text-h6 text-left mt-n4"
-                          :class="{
-                            'pl-4': $vuetify.breakpoint.mdAndUp,
-                            'pl-7': $vuetify.breakpoint.lgAndUp,
-                            'ml-7': $vuetify.breakpoint.xl,
-                          }"
-                          style="font-style: italic;"
-                        />
-                      </v-row>
-                    </v-col>
-                    <v-col
-                      cols="1"
-                      flat
-                      class="d-flex flex-row-reverse"
-                      align-self="start"
-                    >
-                      <v-btn
-                        icon
-                        :class="{
-                          'cookbook-display-none': isEditable(item.id),
-                          'cookbook-display-block': !isEditable(item.id)
-                        }"
-                        @click="editable.push(item.id)"
+                    <v-col>
+                      <v-card
+                        class="d-flex justify-space-between"
+                        flat
                       >
-                        <v-icon
-                          size="30"
+                        <v-card
+                          flat
+                          width="80%"
                         >
-                          mdi-square-edit-outline
-                        </v-icon>
-                      </v-btn>
-                      <v-btn
-                        icon
-                        :class="{
-                          'cookbook-display-block': isEditable(item.id),
-                          'cookbook-display-none': !isEditable(item.id)
-                        }"
-                        @click="popEditable(item.id)"
-                      >
-                        <v-icon
-                          size="30"
-                        >
-                          mdi-close
-                        </v-icon>
-                      </v-btn>
-                      <v-btn
-                        icon
-                        :class="{
-                          'cookbook-display-block': isEditable(item.id),
-                          'cookbook-display-none': !isEditable(item.id)
-                        }"
-                        @click="updateDocument('columns', item.id)"
-                      >
-                        <v-icon
-                          size="30"
-                        >
-                          mdi-check
-                        </v-icon>
-                      </v-btn>
+                          <div
+                            :id="item.id"
+                            class="text-h5 text-left"
+                            :class="{
+                              'pl-4': $vuetify.breakpoint.mdAndUp,
+                              'pl-7': $vuetify.breakpoint.lgAndUp,
+                              'ml-7': $vuetify.breakpoint.xl,
+                            }"
+                          >
+                            {{ item.column_name }}
+                          </div>
+                          <v-text-field
+                            :id="item.column_name"
+                            v-model="item.attribute_name"
+                            :disabled="!isEditable(item.id)"
+                            class="text-h6 text-left mt-n4"
+                            :class="{
+                              'pl-4': $vuetify.breakpoint.mdAndUp,
+                              'pl-7': $vuetify.breakpoint.lgAndUp,
+                              'ml-7': $vuetify.breakpoint.xl,
+                              'v-input--is-focused': isEditable(item.id)
+                            }"
+                            style="font-style: italic;"
+                          />
+                        </v-card>
+                        <v-card flat>
+                          <v-btn
+                            icon
+                            :class="{
+                              'cookbook-display-none': isEditable(item.id),
+                              'cookbook-display-block': !isEditable(item.id)
+                            }"
+                            @click="editable.push(item.id)"
+                          >
+                            <v-icon
+                              size="30"
+                            >
+                              mdi-square-edit-outline
+                            </v-icon>
+                          </v-btn>
+                          <v-btn
+                            icon
+                            :class="{
+                              'cookbook-display-block': isEditable(item.id),
+                              'cookbook-display-none': !isEditable(item.id)
+                            }"
+                            @click="updateDocument('columns', item.id)"
+                          >
+                            <v-icon
+                              size="30"
+                            >
+                              mdi-check
+                            </v-icon>
+                          </v-btn>
+                          <v-btn
+                            icon
+                            :class="{
+                              'cookbook-display-block': isEditable(item.id),
+                              'cookbook-display-none': !isEditable(item.id)
+                            }"
+                            @click="popEditable(item.id)"
+                          >
+                            <v-icon
+                              size="30"
+                            >
+                              mdi-close
+                            </v-icon>
+                          </v-btn>
+                        </v-card>
+                      </v-card>
                     </v-col>
                   </v-row>
                   <v-row class="ml-2 mr-4 cookbook-expanded-column-detail">
@@ -479,7 +504,7 @@
                         'text-right': $vuetify.breakpoint.mdAndUp
                       }"
                     >
-                      데이터도메인
+                      PK여부
                     </v-col>
                     <v-col
                       cols="12"
@@ -487,9 +512,14 @@
                       md="10"
                     >
                       <v-text-field
-                        v-model="item.data_domain"
-                        disabled
+                        v-model="item.is_pk"
                         class="text-left mt-n4"
+                        :disabled="!isEditable(item.id)"
+                        :outlined="isEditable(item.id)"
+                        :dense="isEditable(item.id)"
+                        :class="{
+                          'cookbook-editable-input': isEditable(item.id)
+                        }"
                       />
                     </v-col>
                   </v-row>
@@ -505,7 +535,38 @@
                         'text-right': $vuetify.breakpoint.mdAndUp
                       }"
                     >
-                      개인정보여부
+                      데이터도메인
+                    </v-col>
+                    <v-col
+                      cols="12"
+                      sm="12"
+                      md="10"
+                    >
+                      <v-text-field
+                        v-model="item.data_domain"
+                        class="text-left mt-n4"
+                        :disabled="!isEditable(item.id)"
+                        :outlined="isEditable(item.id)"
+                        :dense="isEditable(item.id)"
+                        :class="{
+                          'cookbook-editable-input': isEditable(item.id)
+                        }"
+                      />
+                    </v-col>
+                  </v-row>
+                  <v-row class="mt-n7 ml-2 mr-4 cookbook-expanded-column-detail">
+                    <v-col
+                      cols="12"
+                      sm="12"
+                      md="2"
+                      class="font-weight-bold"
+                      :class="{
+                        'mb-n5': $vuetify.breakpoint.smAndDown,
+                        'text-left': $vuetify.breakpoint.smAndDown,
+                        'text-right': $vuetify.breakpoint.mdAndUp
+                      }"
+                    >
+                      개인정보포함여부
                     </v-col>
                     <v-col
                       cols="12"
@@ -514,8 +575,13 @@
                     >
                       <v-text-field
                         v-model="item.is_protected"
-                        disabled
+                        :disabled="!isEditable(item.id)"
                         class="text-left mt-n4"
+                        :outlined="isEditable(item.id)"
+                        :dense="isEditable(item.id)"
+                        :class="{
+                          'cookbook-editable-input': isEditable(item.id)
+                        }"
                       />
                     </v-col>
                   </v-row>
@@ -540,8 +606,13 @@
                     >
                       <v-text-field
                         v-model="item.is_encrypted"
-                        disabled
                         class="text-left mt-n4"
+                        :disabled="!isEditable(item.id)"
+                        :outlined="isEditable(item.id)"
+                        :dense="isEditable(item.id)"
+                        :class="{
+                          'cookbook-editable-input': isEditable(item.id)
+                        }"
                       />
                     </v-col>
                   </v-row>
@@ -564,7 +635,7 @@
                       sm="12"
                       md="10"
                     >
-                      <v-simple-table>
+                      <v-simple-table class="pb-4">
                         <template v-slot:default>
                           <thead>
                             <tr>
@@ -690,27 +761,26 @@ export default {
         {
           text: "컬럼명",
           value: "column_name",
-          width: 100
         },
         {
           text: "속성명",
           value: "attribute_name",
-          width: 100
         },
         {
           text: "데이터타입",
           value: "data_type",
-          width: 100
         },
         {
-          text: "개인정보보호여부",
+          text: "PK여부",
+          value: "is_pk",
+        },
+        {
+          text: "개인정보",
           value: "is_protected",
-          width: 140
         },
         {
-          text: "암호화여부",
+          text: "암호화",
           value: "is_encrypted",
-          width: 100
         },
         {
           text: "설명",
@@ -731,6 +801,12 @@ export default {
       bookmark: state => state.bookmark,
       username: state => state.username
     }),
+    title: function() {
+      return [
+        this.detail.table.db_name,
+        this.detail.table.table_name
+      ].join(".");
+    }
   },
   watch: {
     expanded: {
@@ -889,9 +965,13 @@ export default {
   display:inline;
 }
 
+.cookbook-editable-input {
+  padding-top: 7px !important;
+}
+
 .v-data-table > .v-data-table__wrapper > table > tbody > tr > td {
   white-space: nowrap;
-  min-width: 130px;
+  min-width: 100px;
 }
 
 .v-data-table > .v-data-table__wrapper > table > tbody > tr > td:nth-child(1) ,

@@ -30,7 +30,13 @@
           <div
             class="mb-n1"
           >
-            {{ item._source.data_type }} | {{ item._source.data_length }} | {{ item._source.is_encrypted }} | {{ item._source.is_protected }}
+            {{ item._source.data_type }} | {{ item._source.data_length }}
+            <span v-if="isEncrypted(item._source.is_encrypted)">
+              | {{ isEncrypted(item._source.is_encrypted) }}
+            </span>
+            <span v-if="isProtected(item._source.is_protected)">
+              | {{ isProtected(item._source.is_protected) }}
+            </span>
           </div>
           <div
             class="mb-n2"
@@ -49,6 +55,14 @@ export default {
     items: {
       type: Array,
       default: null
+    }
+  },
+  methods: {
+    isEncrypted(value) {
+      return value === 'Y' ? "암호화필드" : null;
+    },
+    isProtected(value) {
+      return value === 'Y' ? "개인정보포함" : null;
     }
   }
 
